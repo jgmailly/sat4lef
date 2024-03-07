@@ -71,14 +71,31 @@ for edge in social:
         
 for clause in clauses:
     print(clause_as_text(clause,SAT_variables_meaning))
-        
-s = Solver(name='g42', bootstrap_with=clauses)
 
-if s.solve():
-    model = s.get_model()
-    print(decode_model_into_alloc(model,SAT_variables_meaning))
+
+if not args.mus:
+    s = Solver(name='g42', bootstrap_with=clauses)
+
+    if s.solve():
+        model = s.get_model()
+        print(decode_model_into_alloc(model,SAT_variables_meaning))
+    else:
+        print("NO")
+
+    s.delete()
+
 else:
-    print("NO")
+    cnf = WCNF()
+    for clause in clauses:
+        cnf.append(clause, weight=1)
 
-s.delete()
-    
+    musx = MUSX(cnf,verbosity=0)
+    MUS = musx.compute()
+    if MUS == None:
+        print("NO")
+    else:
+        print(MUS)
+        print("-- MUS:")
+        for index in MUS:
+            print(f"{clause_as_text(clauses[index],SAT_variables_meaning)}")
+        print("-- END MUS")
