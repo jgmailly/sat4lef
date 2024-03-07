@@ -29,11 +29,11 @@ agents, social, number_of_edges = parse_tgf(args.social_file)
 
 items = get_objects_from_preferences(agents,preferences)
 
-print(f"agents = {agents}")
-print(f"social = {social}")
-print(f"number_of_edges = {number_of_edges}")
-print(f"items = {items}")
-print(f"preferences = {preferences}")
+#print(f"agents = {agents}")
+#print(f"social = {social}")
+#print(f"number_of_edges = {number_of_edges}")
+#print(f"items = {items}")
+#print(f"preferences = {preferences}")
 
 SAT_variables_meaning = dict()
 
@@ -65,12 +65,12 @@ for edge in social:
             if agent_prefers(preferences, edge[1], other_item, item) and agent_prefers(preferences, edge[0], item, other_item):
                 clause.append(get_SAT_variable(edge[1], agents, other_item, items))
 
-        print(f"--- phi_LEF({edge[0]},{edge[1]},{item}) = {clause} = {clause_as_text(clause,SAT_variables_meaning)}")
+#        print(f"--- phi_LEF({edge[0]},{edge[1]},{item}) = {clause} = {clause_as_text(clause,SAT_variables_meaning)}")
         clauses.append(clause) # clause \phi_{lef}(i,j,o)
 
         
-for clause in clauses:
-    print(clause_as_text(clause,SAT_variables_meaning))
+#for clause in clauses:
+#    print(clause_as_text(clause,SAT_variables_meaning))
 
 
 if not args.mus:
@@ -94,8 +94,6 @@ else:
     if MUS == None:
         print("NO")
     else:
-        print(MUS)
-        print("-- MUS:")
+        #print(MUS)
         for index in MUS:
             print(f"{clause_as_text(clauses[index],SAT_variables_meaning)}")
-        print("-- END MUS")
