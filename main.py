@@ -70,7 +70,7 @@ for edge in social:
 
         
 #for clause in clauses:
-#    print(clause_as_text(clause,SAT_variables_meaning))
+#    print(clause, " - ", clause_as_text(clause,SAT_variables_meaning))
 
 
 if not args.mus:
@@ -94,6 +94,6 @@ else:
     if MUS == None:
         print("NO")
     else:
-        #print(MUS)
+        #print(f"MUS = {MUS}")
         for index in MUS:
-            print(f"{clause_as_text(clauses[index],SAT_variables_meaning)}")
+            print(f"{clause_as_text(clauses[index-1],SAT_variables_meaning)}")
