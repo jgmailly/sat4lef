@@ -1,0 +1,3 @@
+alloc(A1,o1) alloc(A1,o2) 
+-alloc(A1,o1) 
+-alloc(A1,o2) 
