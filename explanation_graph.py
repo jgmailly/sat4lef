@@ -56,6 +56,7 @@ class ExplanationGraph:
     def __init__(self):
         self.nodes = []
         self.edges = []
+        self.activations = []
 
     def get_edges(self):
         return self.edges
@@ -69,6 +70,27 @@ class ExplanationGraph:
 
     def add_edge(self, node_from, node_to):
         self.edges.append([node_from, node_to])
+
+    def get_clause_nodes(self):
+        clause_nodes = []
+        for node in self.nodes:
+            if node.get_node_type() in ["at-least-one-object-per-agent", "at-most-one-agent-per-object", "lef-clause"]:
+                clause_node.append(node)
+        return clause_nodes
+        
+    def get_predecessors(self, node):
+        predecessors = []
+        for edge in self.edges:
+            if edge[1] == node:
+                predecessors.append(edge[0])
+        return predecessors
+
+    def get_successors(self, node):
+        successors = []
+        for edge in self.edges:
+            if edge[0] == node:
+                successors.append(edge[1])
+        return successors
 
     def to_string(self):
         str_result = ""
@@ -103,6 +125,51 @@ class ExplanationGraph:
             str_result += "n" + str(edge[0].get_node_id_in_graph(self)) + " -> " + "n" + str(edge[1].get_node_id_in_graph(self)) + " ;\n"
         str_result += "}"
         return str_result
+
+    def get_successor_activations(self, activation):
+        successors = []
+        successor = activation.copy()
+
+        for node in self.get_clause_nodes():
+            index = node.get_node_id_in_graph(self)
+            if not activation[index]:
+                predecessors = self.get_predecessors(node)
+                all_pred_activated = True
+                for predecessor in predecessors:
+                    pred_index = predecessor.get_node_id_in_graph(self)
+                    if not activation[pred_index]:
+                        all_pred_activated = False
+                if all_pred_activated:
+                    successor = True
+
+        ####### TO DO
+        # Third item of the definition of v^{t+1}
+        # ''If x is a clause-node and becomes activated in v^t, then one of its successor variable-node
+        # y is chosen to be activated in v^{t+1}''
+        # This is where the 'non-determinism' is added
+            
+        return None
+    
+    def activate(self):
+        new_activation = []
+        for node in self.nodes:
+            if node.get_node_type() ==  "top":
+                new_activation.append(True)
+            else:
+                new_activation.append(False)
+        self.activations.append(new_activation)
+            
+        next_activations = [self.activations[0]]
+        while next_activations != []:
+            next_activation = next_activations.pop(0)
+            if next_activation not in self.activations:
+                self.activations.append(next_activation)
+                successor_activations = get_successor_activations(self, next_activation)
+                next_activations = successor_activations + next_activations
+
+        for activation in self.activations:
+            print(activation)
+
 
 
 if __name__ == "__main__":
