@@ -13,17 +13,24 @@ class ClauseNode:
     def add_literal(self, literal):
         self.literals.append(literal)
 
+    def content(self):
+        if self.node_type in ["top", "bottom"]:
+            return self.node_type
+        
+        string_result = ""
+        for literal in self.literals[:-1]:
+            string_result += literal + ","
+        string_result += self.literals[-1]
+        return string_result
+        
     def to_string(self):
         if self.node_type == "top":
             return "top"
         if self.node_type == "bottom":
             return "bottom"
 
-        string_result = f"{self.node_type} : ["
-        for literal in self.literals[:-1]:
-            string_result += literal + ","
-        string_result += self.literals[-1] + "]"
-        return string_result
+        return f"{self.node_type} : [" + self.content() + "]"
+
 
     def __eq__(self, other):
         if not isinstance(other, ClauseNode):
@@ -41,6 +48,9 @@ class ClauseNode:
                 return False
         
         return True
+
+    def get_node_id_in_graph(self, graph):
+        return graph.get_nodes().index(self)
 
 class ExplanationGraph:
     def __init__(self):
@@ -68,6 +78,31 @@ class ExplanationGraph:
             str_result += f"edge({edge[0].to_string()},{edge[1].to_string()}).\n"
         return str_result
 
+    def to_dot_basic(self):
+        str_result = "digraph G {\n"
+        for node in self.nodes:
+            str_result += node.content() + " "
+            if node.get_node_type() in ["top", "bottom", "var"]:
+                str_result += "[shape=box];\n"
+            else:
+                str_result += "[shape=ellipse];\n"
+        for edge in self.edges:
+            str_result += edge[0].content() + " -> " + edge[1].content() + " ;\n"
+        str_result += "}"
+        return str_result
+
+    def to_dot(self):
+        str_result = "digraph G {\n"
+        for node in self.nodes:
+            str_result += "n" + str(node.get_node_id_in_graph(self)) + " "
+            if node.get_node_type() in ["top", "bottom", "var"]:
+                str_result += f"[shape=ellipse, label=\"{node.content()}\"];\n"
+            else:
+                str_result += f"[shape=box, label=\"{node.content()}\"];\n"
+        for edge in self.edges:
+            str_result += "n" + str(edge[0].get_node_id_in_graph(self)) + " -> " + "n" + str(edge[1].get_node_id_in_graph(self)) + " ;\n"
+        str_result += "}"
+        return str_result
 
 
 if __name__ == "__main__":

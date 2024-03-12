@@ -136,8 +136,9 @@ for node1 in graph.get_nodes():
             if "-" + literal in node2.get_literals():
                 graph.add_edge(node1, node2)
     
-print(graph.to_string())
-    
+#print(graph.to_string())
+print(graph.to_dot())
+
 sys.exit("Closing")
             
 if cli_args.verbose:

@@ -1,0 +1,7 @@
+alloc(A1,o1) alloc(A1,o2) alloc(A1,o3)
+alloc(A2,o1) alloc(A2,o2) alloc(A2,o3)
+-alloc(A1,o2)
+-alloc(A1,o3)
+-alloc(A2,o2)
+-alloc(A2,o3)
+-alloc(A1,o1) -alloc(A2,o1)
