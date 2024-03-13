@@ -160,7 +160,9 @@ class ExplanationGraph:
     def get_successor_activations(self, activation):
         successors = []
         successor = activation.copy()
+        hasActivatedClause = False
 
+        index = -1
         for node in self.get_clause_nodes():
             index = node.get_node_id_in_graph(self)
             if not activation[index]:
@@ -172,10 +174,14 @@ class ExplanationGraph:
                         all_pred_activated = False
                 if all_pred_activated:
                     successor[index] = True
+                    hasActivatedClause = True
                     break
                     
 
-        print(f"Activation of clause node {index}: {self.nodes[index].content()}")
+        if not hasActivatedClause:
+            return []
+        
+        #print(f"Activation of clause node {index}: {self.nodes[index].content()}")
 
         successor_nodes = self.get_successors(self.nodes[index])
         for successor_node in successor_nodes:
@@ -183,18 +189,19 @@ class ExplanationGraph:
             new_successor = successor.copy()
             new_successor[successor_index] = True
             successors.append(new_successor)
-            print(f"Activation of var node {successor_index}: {self.nodes[successor_index].content()}")
+            #print(f"Activation of var node {successor_index}: {self.nodes[successor_index].content()} - successor of node {index}: {self.nodes[index].content()}")
+            #print(f"Successor without var node: {successor}")
+            #print(f"Successor with var node: {new_successor}")
         
         return successors
     
-    def activate(self):
+    def activate(self, save=False):
         new_activation = []
         for node in self.nodes:
             if node.get_node_type() ==  "top":
                 new_activation.append(True)
             else:
                 new_activation.append(False)
-#        self.activations.append(new_activation)
             
         next_activations = [new_activation]
         while next_activations != []:
@@ -204,18 +211,19 @@ class ExplanationGraph:
                 successor_activations = self.get_successor_activations(next_activation)
                 next_activations = successor_activations + next_activations
 
-        act_index = 0
-        for activation in self.activations:
-            self.to_graphviz(activation, act_index)
+        if save:
+            act_index = 0
+            for activation in self.activations:
+                self.to_graphviz(activation, act_index)
 
-            print("-------------")
-            print(f"Activation-{str(act_index).zfill(3)}")
-            print(activation)
-            for index in range(len(activation)):
-                if activation[index]:
-                    print(f"index: {index} - node: {self.nodes[index].content()}")
-            #print(self.to_dot_with_activation(activation))
-            print("-------------\n")
+                #print("-------------")
+                #print(f"Activation-{str(act_index).zfill(3)}")
+                #print(activation)
+                #for index in range(len(activation)):
+                #    if activation[index]:
+                #        print(f"index: {index} - node: {self.nodes[index].content()}")
+                #print("-------------\n")
 
-            act_index += 1
+                act_index += 1
 
+        return self.activations

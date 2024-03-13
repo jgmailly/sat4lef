@@ -8,6 +8,7 @@ from explanation_graph import *
 argparser = argparse.ArgumentParser()
 argparser.add_argument("mus_file", help="the file containing the enforcement query")
 argparser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
+argparser.add_argument("-s", "--save", help="saves explanation graph activations as png files", action="store_true")
 cli_args = argparser.parse_args()
 
 
@@ -165,7 +166,7 @@ involved_agents = set()
                     
                     
 start_time = time.time()
-graph.activate()
+graph.activate(cli_args.save)
 end_time = time.time()
 
 if cli_args.verbose:
