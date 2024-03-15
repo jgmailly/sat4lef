@@ -74,7 +74,7 @@ for edge in social:
 
 
 if not args.mus:
-    s = Solver(name='g42', bootstrap_with=clauses)
+    s = Solver(name='g4', bootstrap_with=clauses)
 
     if s.solve():
         model = s.get_model()
