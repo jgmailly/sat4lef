@@ -5,6 +5,7 @@ from utils import *
 from pysat.solvers import Solver
 from pysat.examples.rc2 import RC2
 from pysat.examples.musx import MUSX
+from pysat.examples.optux import OptUx
 from pysat.examples.mcsls import MCSls
 from pysat.formula import WCNF
 
@@ -13,6 +14,9 @@ parser.add_argument("pref_file", type=argparse.FileType('r'), help="path to the 
 parser.add_argument("social_file", type=argparse.FileType('r'), help="path to the social file")
 parser.add_argument("-o", "--out", type=argparse.FileType('a'), help="optional file to print the output (append)")
 parser.add_argument("--mus", action="store_true", help="if set compute a mus instead of the allocation (only works if formula is unsat)")
+parser.add_argument("--enummin", action="store_true", help="enumerate the min MUSes")
+parser.add_argument("--enumall", action="store_true", help="enumerate all the MUSes")
+
 
 args = parser.parse_args()
 
@@ -89,11 +93,29 @@ else:
     for clause in clauses:
         cnf.append(clause, weight=1)
 
-    musx = MUSX(cnf,verbosity=0)
-    MUS = musx.compute()
+    
+
+    #musx = MUSX(cnf,verbosity=0)
+    with OptUx(cnf) as optux:
+        MUS = optux.compute()
     if MUS == None:
         print("NO")
     else:
+        print("First minimal MUS found:")
         #print(f"MUS = {MUS}")
         for index in MUS:
             print(f"{clause_as_text(clauses[index-1],SAT_variables_meaning)}")
+
+    if args.enummin or args.enumall: 
+        nb_mus=0
+        min_cost=0
+        with OptUx(cnf) as optux:
+            for mus in optux.enumerate():
+                if args.enummin and min_cost !=0 and min_cost!=optux.cost:
+                    break
+                nb_mus+=1
+                min_cost = optux.cost
+                print('mus {0} has cost {1}'.format(mus, optux.cost))
+
+
+        print("Found ", nb_mus, "MUS")
