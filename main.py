@@ -16,6 +16,8 @@ parser.add_argument("-o", "--out", type=argparse.FileType('a'), help="optional f
 parser.add_argument("--mus", action="store_true", help="if set compute a mus instead of the allocation (only works if formula is unsat)")
 parser.add_argument("--enummin", action="store_true", help="enumerate the min MUSes")
 parser.add_argument("--enumall", action="store_true", help="enumerate all the MUSes")
+parser.add_argument("--verbose", action="store_true", help="print the details of MUSes ")
+
 
 
 args = parser.parse_args()
@@ -107,6 +109,9 @@ else:
             print(f"{clause_as_text(clauses[index-1],SAT_variables_meaning)}")
 
     if args.enummin or args.enumall: 
+        print("==============================================================")
+        print("=== MUS enumeration ")
+        print("==============================================================")
         nb_mus=0
         min_cost=0
         with OptUx(cnf) as optux:
@@ -116,6 +121,11 @@ else:
                 nb_mus+=1
                 min_cost = optux.cost
                 print('mus {0} has cost {1}'.format(mus, optux.cost))
+                if args.verbose:
+                    print("==============================================================")
+                    for index in mus:
+                        print(f"{clause_as_text(clauses[index-1],SAT_variables_meaning)}")
 
 
+        print("==============================================================")
         print("Found ", nb_mus, "MUS")
