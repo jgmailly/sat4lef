@@ -58,7 +58,8 @@ for agent in agents:
         other_agents = agents.copy()
         other_agents.remove(agent)
         for other_agent in other_agents:
-            clauses.append(agents_do_not_share_items(agent, other_agent, agents, item, items)) # clause \phi_{alloc}^O(o,i,j)
+            if other_agent > agent:
+                clauses.append(agents_do_not_share_items(agent, other_agent, agents, item, items)) # clause \phi_{alloc}^O(o,i,j)
 
             
 for edge in social:
@@ -71,7 +72,19 @@ for edge in social:
             if agent_prefers(preferences, edge[1], other_item, item) and agent_prefers(preferences, edge[0], item, other_item):
                 clause.append(get_SAT_variable(edge[1], agents, other_item, items))
 
-#        print(f"--- phi_LEF({edge[0]},{edge[1]},{item}) = {clause} = {clause_as_text(clause,SAT_variables_meaning)}")
+        #print(f"--- phi_LEF({edge[0]},{edge[1]},{item}) = {clause} = {clause_as_text(clause,SAT_variables_meaning)}")
+        clauses.append(clause) # clause \phi_{lef}(i,j,o)
+        
+        # reverse direction of the edge
+        clause = [-get_SAT_variable(edge[1], agents, item, items)]
+
+        other_items = items.copy()
+        other_items.remove(item)
+        for other_item in other_items:
+            if agent_prefers(preferences, edge[0], other_item, item) and agent_prefers(preferences, edge[1], item, other_item):
+                clause.append(get_SAT_variable(edge[0], agents, other_item, items))
+
+        #print(f"--- phi_LEF({edge[1]},{edge[0]},{item}) = {clause} = {clause_as_text(clause,SAT_variables_meaning)}")
         clauses.append(clause) # clause \phi_{lef}(i,j,o)
 
         
