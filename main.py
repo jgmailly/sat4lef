@@ -17,6 +17,7 @@ parser.add_argument("--mus", action="store_true", help="if set compute a mus ins
 parser.add_argument("--enummin", action="store_true", help="enumerate the min MUSes")
 parser.add_argument("--enumall", action="store_true", help="enumerate all the MUSes")
 parser.add_argument("--verbose", action="store_true", help="print the details of MUSes ")
+parser.add_argument("--redundant", action="store_true", help="add redundant structural clauses")
 
 
 
@@ -47,6 +48,7 @@ for agent in agents:
     for item in items:
         #print(f"alloc({agent},{item}) = {get_SAT_variable(agent, agents, item, items)}")
         SAT_variables_meaning[get_SAT_variable(agent, agents, item, items)] = f"alloc({agent},{item})"
+
 
 #print(SAT_variables_meaning)
 
@@ -87,7 +89,15 @@ for edge in social:
         #print(f"--- phi_LEF({edge[1]},{edge[0]},{item}) = {clause} = {clause_as_text(clause,SAT_variables_meaning)}")
         clauses.append(clause) # clause \phi_{lef}(i,j,o)
 
-        
+if args.redundant:
+    for item in items:
+        clauses.append(at_least_one_agent(item, agents, items))
+        other_items = [other_item for other_item in items if other_item > item]
+        for agent in agents:
+            for other_item in other_items:
+                clauses.append(items_do_not_share_agents(agent, agents, item, other_item, items)) # clause \phi_{alloc}^O(o,i,j)
+
+      
 #for clause in clauses:
 #    print(clause, " - ", clause_as_text(clause,SAT_variables_meaning))
 

@@ -58,9 +58,20 @@ def at_least_one_item(agent, agents, items):
         clause.append(get_SAT_variable(agent, agents, item, items))
     return clause
 
+## Builds the clause expressing that an object must be assigned to at least one agent
+def at_least_one_agent(item, agents, items):
+    clause = []
+    for agent in agents:
+        clause.append(get_SAT_variable(agent, agents, item, items))
+    return clause
+
 ## Builds the clause expressing that an item cannot be shared by two agents
 def agents_do_not_share_items(agent, other_agent, agents, item, items):
     return [-get_SAT_variable(agent, agents, item, items), -get_SAT_variable(other_agent, agents, item, items)]
+
+## Builds the clause expressing that an agent cannot be assigned to two objects
+def items_do_not_share_agents(agent, agents, item, other_item, items):
+    return [-get_SAT_variable(agent, agents, item, items), -get_SAT_variable(agent, agents, other_item, items)]
 
 ## Determines whether an agent prefers item1 over item2
 def agent_prefers(preferences, agent, item1, item2):
