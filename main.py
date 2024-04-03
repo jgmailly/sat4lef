@@ -102,23 +102,20 @@ if args.redundant:
 #    print(clause, " - ", clause_as_text(clause,SAT_variables_meaning))
 
 
-if not args.mus:
-    s = Solver(name='g4', bootstrap_with=clauses)
 
-    if s.solve():
-        model = s.get_model()
-        print(decode_model_into_alloc(model,SAT_variables_meaning))
-    else:
-        print("NO")
+s = Solver(name='g4', bootstrap_with=clauses)
 
+if s.solve():
+    model = s.get_model()
+    print(decode_model_into_alloc(model,SAT_variables_meaning))
     s.delete()
-
-else:
+elif args.mus: 
+    s.delete()
+    print("NO")
     cnf = WCNF()
     for clause in clauses:
         cnf.append(clause, weight=1)
 
-    
 
     #musx = MUSX(cnf,verbosity=0)
     with OptUx(cnf) as optux:
