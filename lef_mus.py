@@ -13,7 +13,7 @@ from pysat.formula import WCNF
 
 
 
-class lef_mus:
+class LefMus:
     def __init__(self, location):
         self.soc_file = open(location + ".soc",'r')
         self.pref_file = open(location + ".pref",'r')
@@ -115,7 +115,7 @@ class lef_mus:
 
 
 
-    def compute_mus(self,mus,enum):
+    def compute_mus(self,mus,enum,enumall,verbose=False):
         if len(self.clauses) == 0 or len(self.minimum_muses) > 0:
             return True, None
         s = Solver(name='g4', bootstrap_with=self.clauses)
@@ -132,6 +132,8 @@ class lef_mus:
             #musx = MUSX(cnf,verbosity=0)
             with OptUx(cnf) as optux:
                 MUS = optux.compute()
+                if verbose:
+                    print("after optux compute")
             if MUS == None:
                 return True, None 
             else:
@@ -143,14 +145,19 @@ class lef_mus:
                 min_cost=0
                 min = True
                 with OptUx(cnf) as optux:
+                    if verbose:
+                        print("enumeration...")
                     for mus in optux.enumerate():
                         if enum and min_cost !=0 and min_cost!=optux.cost:
                             min = False
+                            break
                         nb_mus+=1
                         min_cost = optux.cost
                         if (min):
                             self.minimum_muses.append((mus,optux.cost))
-                        self.all_muses.append((mus,optux.cost))
+                            self.all_muses.append((mus,optux.cost))
+                        elif (enumall):
+                            self.all_muses.append((mus,optux.cost))
             return False, res #clause_as_text(self.clauses[self.minimum_muses[0][0]-1],self.SAT_variables_meaning)
 
     
@@ -163,6 +170,7 @@ def main():
     parser.add_argument("sample_size", type=int, help="specify the number of generated instances")
     parser.add_argument("model", help="specify the statistical model for graph generation")
     parser.add_argument("parameter", type=float, help="specify the statistical model for graph generation")
+    parser.add_argument("--verbose", action="store_true", help="print the details of MUSes ")
     args = parser.parse_args()
     n_args = len(sys.argv)
     path = os.getcwd()
@@ -189,12 +197,14 @@ def main():
             print_social_network(graph,location,filename)
         if (not os.path.exists(location+".pref")):
             print_preferences(location,args.nb_agents)
-        encoding = lef_mus(location)
+        encoding = LefMus(location)
         encoding.sat_encoding(False)
+        if args.verbose:
+            print("basic encoding done")
         #print("number of clauses: "+str(encoding.get_nb_clauses()))
         nb_clauses += encoding.get_nb_clauses()
         #print(encoding.compute_mus(True,False)) 
-        if not encoding.compute_mus(True,True)[0]:
+        if not encoding.compute_mus(True,True,False,args.verbose)[0]:
             nb_false_instances += 1
             nb_mus += len(encoding.get_all_muses())
             nb_min_mus += len(encoding.get_minimum_muses())
@@ -208,10 +218,12 @@ def main():
             #print("minimum size of a MUS: "+str(encoding.get_minimum_muses()[0][1]))
             #print("maximum size of a MUS: "+str(encoding.get_all_muses()[-1][1]))
         encoding.sat_encoding(True)
+        if args.verbose:
+            print("redundant encoding done")
         #print("number of clauses: "+str(encoding.get_nb_clauses()))
         nb_clauses_redundant += encoding.get_nb_clauses()
         #print(encoding.compute_mus(True,False))   
-        if not encoding.compute_mus(True,True)[0]:
+        if not encoding.compute_mus(True,True,False,args.verbose)[0]:
             nb_mus_redundant += len(encoding.get_all_muses())
             nb_min_mus_redundant += len(encoding.get_minimum_muses())
             if (len(encoding.get_minimum_muses()) > 0):
