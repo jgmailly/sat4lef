@@ -159,6 +159,8 @@ class LefMus:
                         elif (enumall):
                             self.all_muses.append((mus,optux.cost))
             return False, res #clause_as_text(self.clauses[self.minimum_muses[0][0]-1],self.SAT_variables_meaning)
+        else:
+            return False, None
 
     
 
@@ -171,6 +173,9 @@ def main():
     parser.add_argument("model", help="specify the statistical model for graph generation")
     parser.add_argument("parameter", type=float, help="specify the statistical model for graph generation")
     parser.add_argument("--verbose", action="store_true", help="print the details of MUSes ")
+    parser.add_argument("--mus", action="store_true", help="if set compute a mus instead of the allocation (only works if formula is unsat)")
+    parser.add_argument("--enummin", action="store_true", help="enumerate the min MUSes")
+    parser.add_argument("--enumall", action="store_true", help="enumerate all the MUSes")
     args = parser.parse_args()
     n_args = len(sys.argv)
     path = os.getcwd()
@@ -204,7 +209,7 @@ def main():
         #print("number of clauses: "+str(encoding.get_nb_clauses()))
         nb_clauses += encoding.get_nb_clauses()
         #print(encoding.compute_mus(True,False)) 
-        if not encoding.compute_mus(True,True,False,args.verbose)[0]:
+        if not encoding.compute_mus(args.mus,args.enummin,args.enumall,args.verbose)[0]:
             nb_false_instances += 1
             nb_mus += len(encoding.get_all_muses())
             nb_min_mus += len(encoding.get_minimum_muses())
@@ -223,7 +228,7 @@ def main():
         #print("number of clauses: "+str(encoding.get_nb_clauses()))
         nb_clauses_redundant += encoding.get_nb_clauses()
         #print(encoding.compute_mus(True,False))   
-        if not encoding.compute_mus(True,True,False,args.verbose)[0]:
+        if not encoding.compute_mus(args.mus,args.enummin,args.enumall,args.verbose)[0]:
             nb_mus_redundant += len(encoding.get_all_muses())
             nb_min_mus_redundant += len(encoding.get_minimum_muses())
             if (len(encoding.get_minimum_muses()) > 0):
