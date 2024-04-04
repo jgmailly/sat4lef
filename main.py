@@ -53,15 +53,18 @@ for agent in agents:
 #print(SAT_variables_meaning)
 
 clauses = []
+clauses_meaning = [] # clauses_meaning[i] corresponds to clauses[i]
 
 for agent in agents:
     clauses.append(at_least_one_item(agent, agents, items)) # clause \phi_{alloc}^{\geq 1}(i)
+    clauses_meaning.append(f"phi_(alloc)^(>= 1, N)({agent})")
     for item in items:
         other_agents = agents.copy()
         other_agents.remove(agent)
         for other_agent in other_agents:
             if other_agent > agent:
                 clauses.append(agents_do_not_share_items(agent, other_agent, agents, item, items)) # clause \phi_{alloc}^O(o,i,j)
+                clauses_meaning.append(f"phi_(alloc)^(<= 1, O)({item}, {agent}, {other_agent})")
 
             
 for edge in social:
@@ -76,6 +79,7 @@ for edge in social:
 
         #print(f"--- phi_LEF({edge[0]},{edge[1]},{item}) = {clause} = {clause_as_text(clause,SAT_variables_meaning)}")
         clauses.append(clause) # clause \phi_{lef}(i,j,o)
+        clauses_meaning.append(f"phi_(lef)({edge[0]},{edge[1]},{item})")
         
         # reverse direction of the edge
         clause = [-get_SAT_variable(edge[1], agents, item, items)]
@@ -88,18 +92,21 @@ for edge in social:
 
         #print(f"--- phi_LEF({edge[1]},{edge[0]},{item}) = {clause} = {clause_as_text(clause,SAT_variables_meaning)}")
         clauses.append(clause) # clause \phi_{lef}(i,j,o)
+        clauses_meaning.append(f"phi_(lef)({edge[1]},{edge[0]},{item})")
 
 if args.redundant:
     for item in items:
         clauses.append(at_least_one_agent(item, agents, items))
+        clauses_meaning.append(f"phi_(alloc)^(>= 1, 0)({item})")
         other_items = [other_item for other_item in items if other_item > item]
         for agent in agents:
             for other_item in other_items:
-                clauses.append(items_do_not_share_agents(agent, agents, item, other_item, items)) # clause \phi_{alloc}^O(o,i,j)
+                clauses.append(items_do_not_share_agents(agent, agents, item, other_item, items)) # clause \phi_{alloc}^N(o,i,j)
+                clauses_meaning.append(f"phi_(alloc)^(<= 1,N)({item},{agent},{other_agent})")
 
       
 #for clause in clauses:
-#    print(clause, " - ", clause_as_text(clause,SAT_variables_meaning))
+#    print(clause, " - ", clause_as_text(clause,SAT_variables_meaning), " - ", clauses_meaning[clauses.index(clause)])
 
 
 
@@ -126,7 +133,7 @@ elif args.mus:
         print("First minimal MUS found:")
         #print(f"MUS = {MUS}")
         for index in MUS:
-            print(f"{clause_as_text(clauses[index-1],SAT_variables_meaning)}")
+            print(f"{clause_as_text_with_meaning(clauses[index-1],clauses_meaning[index-1], SAT_variables_meaning)}")
 
     if args.enummin or args.enumall: 
         print("==============================================================")
@@ -144,7 +151,7 @@ elif args.mus:
                 if args.verbose:
                     print("==============================================================")
                     for index in mus:
-                        print(f"{clause_as_text(clauses[index-1],SAT_variables_meaning)}")
+                        print(f"{clause_as_text_with_meaning(clauses[index-1], clauses_meaning[index-1],SAT_variables_meaning)}")
 
 
         print("==============================================================")

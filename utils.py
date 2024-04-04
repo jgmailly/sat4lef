@@ -90,6 +90,18 @@ def clause_as_text(clause,SAT_variables_meaning):
             result += "-" + SAT_variables_meaning[-lit] + " "
     return result
 
+## Builds a text representation of a clause with the textual meaning of the clause
+def clause_as_text_with_meaning(clause,clause_meaning, SAT_variables_meaning):
+    result = clause_meaning + " : "
+    if len(clause) == 0:
+        return "empty clause"
+    for lit in clause:
+        if lit > 0:
+            result += SAT_variables_meaning[lit] + " "
+        else:
+            result += "-" + SAT_variables_meaning[-lit] + " "
+    return result
+
 # Builds a text representation of a model
 def decode_model_into_alloc(model,SAT_variables_meaning):
     result = ""
