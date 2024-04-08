@@ -150,7 +150,8 @@ class LefMus:
                     for mus in optux.enumerate():
                         if enum and min_cost !=0 and min_cost!=optux.cost:
                             min = False
-                            break
+                            if not enumall:
+                                break
                         nb_mus+=1
                         min_cost = optux.cost
                         if (min):
@@ -216,8 +217,8 @@ def main():
             if (len(encoding.get_minimum_muses()) > 0):
                 min_mus_size += encoding.get_minimum_muses()[0][1]
                 max_mus_size += encoding.get_all_muses()[-1][1]     
-        #if (len(encoding.get_minimum_muses()) > 0):
-            #print(encoding.get_minimum_muses())
+            #if (len(encoding.get_minimum_muses()) > 0):
+            #    print(encoding.get_minimum_muses())
             #print("number of minimum MUSes: "+str(len(encoding.get_minimum_muses())))
             #print("total number of MUSes: "+str(len(encoding.get_all_muses())))
             #print("minimum size of a MUS: "+str(encoding.get_minimum_muses()[0][1]))
@@ -234,8 +235,8 @@ def main():
             if (len(encoding.get_minimum_muses()) > 0):
                 min_mus_size_redundant += encoding.get_minimum_muses()[0][1]
                 max_mus_size_redundant += encoding.get_all_muses()[-1][1]      
-        #if (len(encoding.get_minimum_muses()) > 0):
-            #print(encoding.get_minimum_muses())
+            #if (len(encoding.get_minimum_muses()) > 0):
+            #    print(encoding.get_minimum_muses())
             #print("number of minimum MUSes: "+str(len(encoding.get_minimum_muses())))
             #print("total number of MUSes: "+str(len(encoding.get_all_muses())))
             #print("minimum size of a MUS: "+str(encoding.get_minimum_muses()[0][1]))

@@ -1,0 +1,19 @@
+
+
+===================================
+n = 7
+sample size = 100
+nb false instances = 82
+===================================
+----------BASIC ENCODING----------
+average number of clauses: 294.0
+average number of minimum MUSes: 227.32926829268294
+average total number of MUSes: 227.32926829268294
+average minimum size of a MUS: 10.768292682926829
+average maximum size of a MUS: 10.768292682926829
+----------REDUNDANT ENCODING----------
+average number of clauses: 448.0
+average number of minimum MUSes: 124.67073170731707
+average total number of MUSes: 124.67073170731707
+average minimum size of a MUS: 8.402439024390244
+average maximum size of a MUS: 8.402439024390244

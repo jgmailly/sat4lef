@@ -1,0 +1,91 @@
+
+
+===================================
+n = 3
+sample size = 100
+nb false instances = 63
+===================================
+----------BASIC ENCODING----------
+average number of clauses: 24.0
+average number of minimum MUSes: 3.9682539682539684
+average total number of MUSes: 75.31746031746032
+average minimum size of a MUS: 4.619047619047619
+average maximum size of a MUS: 12.26984126984127
+----------REDUNDANT ENCODING----------
+average number of clauses: 36.0
+average number of minimum MUSes: 4.285714285714286
+average total number of MUSes: 220.4920634920635
+average minimum size of a MUS: 4.031746031746032
+average maximum size of a MUS: 13.904761904761905
+
+===================================
+n = 4
+sample size = 100
+nb false instances = 63
+===================================
+----------BASIC ENCODING----------
+average number of clauses: 52.0
+average number of minimum MUSes: 8.746031746031745
+average total number of MUSes: 8.746031746031745
+average minimum size of a MUS: 6.841269841269841
+average maximum size of a MUS: 6.841269841269841
+----------REDUNDANT ENCODING----------
+average number of clauses: 80.0
+average number of minimum MUSes: 5.698412698412699
+average total number of MUSes: 5.698412698412699
+average minimum size of a MUS: 5.317460317460317
+average maximum size of a MUS: 5.317460317460317
+
+===================================
+n = 5
+sample size = 100
+nb false instances = 62
+===================================
+----------BASIC ENCODING----------
+average number of clauses: 95.0
+average number of minimum MUSes: 10.85483870967742
+average total number of MUSes: 10.85483870967742
+average minimum size of a MUS: 9.53225806451613
+average maximum size of a MUS: 9.53225806451613
+----------REDUNDANT ENCODING----------
+average number of clauses: 150.0
+average number of minimum MUSes: 6.258064516129032
+average total number of MUSes: 6.258064516129032
+average minimum size of a MUS: 6.983870967741935
+average maximum size of a MUS: 6.983870967741935
+
+===================================
+n = 6
+sample size = 100
+nb false instances = 46
+===================================
+----------BASIC ENCODING----------
+average number of clauses: 156.0
+average number of minimum MUSes: 26.543478260869566
+average total number of MUSes: 26.543478260869566
+average minimum size of a MUS: 11.673913043478262
+average maximum size of a MUS: 11.673913043478262
+----------REDUNDANT ENCODING----------
+average number of clauses: 252.0
+average number of minimum MUSes: 10.478260869565217
+average total number of MUSes: 10.478260869565217
+average minimum size of a MUS: 8.282608695652174
+average maximum size of a MUS: 8.282608695652174
+
+===================================
+n = 7
+sample size = 100
+nb false instances = 46
+===================================
+----------BASIC ENCODING----------
+average number of clauses: 238.0
+average number of minimum MUSes: 73.91304347826087
+average total number of MUSes: 73.91304347826087
+average minimum size of a MUS: 19.565217391304348
+average maximum size of a MUS: 19.565217391304348
+----------REDUNDANT ENCODING----------
+average number of clauses: 392.0
+average number of minimum MUSes: 23.847826086956523
+average total number of MUSes: 23.847826086956523
+average minimum size of a MUS: 10.152173913043478
+average maximum size of a MUS: 10.152173913043478
