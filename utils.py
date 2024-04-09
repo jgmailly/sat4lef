@@ -98,7 +98,6 @@ def clause_as_text(clause,SAT_variables_meaning):
 
 ## Translates the clause by replacing SAT variables with alloc variables
 def translated_clause(clause,agents):
-    print(clause)
     res = []
     for lit in clause:
         if lit < 0:
