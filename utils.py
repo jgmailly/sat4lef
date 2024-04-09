@@ -51,6 +51,12 @@ def get_SAT_variable(agent, agents, item, items):
 
     return (agent_index) * len(agents) +  (item_index) + 1
 
+## Returns the allocation variable alloc_agent_item from the SAT variable
+def get_alloc_variable(variable_index, agents):
+    item = (variable_index - 1) % len(agents)
+    agent = (variable_index - 1) // len(agents)
+    return (agent,item)
+
 ## Builds the clause expressing that an agent must receive at least one item
 def at_least_one_item(agent, agents, items):
     clause = []
@@ -89,6 +95,17 @@ def clause_as_text(clause,SAT_variables_meaning):
         else:
             result += "-" + SAT_variables_meaning[-lit] + " "
     return result
+
+## Translates the clause by replacing SAT variables with alloc variables
+def translated_clause(clause,agents):
+    print(clause)
+    res = []
+    for lit in clause:
+        if lit < 0:
+            res.append("-alloc"+str(get_alloc_variable(-lit,agents)))
+        else:
+            res.append("alloc"+str(get_alloc_variable(lit,agents)))
+    return res
 
 ## Builds a text representation of a clause with the textual meaning of the clause
 def clause_as_text_with_meaning(clause,clause_meaning, SAT_variables_meaning):
