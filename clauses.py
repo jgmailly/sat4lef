@@ -204,7 +204,7 @@ class LefClause(Clause):
             str(self.implied_agent)+" must be assigned to an object that agent "+str(self.implied_agent)+" prefers to "+str(self.implicant_object)+\
                 " and that agent "+str(self.implicant_agent)+" likes less than "+str(self.implicant_object)
         if (len(self.possible_objects) == 0):
-            return res+" However, such an object does not exist according to their preferences, a contradiction."
+            return res+". However, such an object does not exist according to their preferences, a contradiction."
         res += ", i.e., one object among objects: "
         for object in self.possible_objects:
             res += object + ", "
@@ -225,3 +225,5 @@ def recognize_clause(clause, agents, items):
     if all_positive:
         return AtLeastClause(clause,agents,items)
     return LefClause(clause, agents)
+
+

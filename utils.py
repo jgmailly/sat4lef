@@ -53,8 +53,8 @@ def get_SAT_variable(agent, agents, item, items):
 
 ## Returns the allocation variable alloc_agent_item from the SAT variable
 def get_alloc_variable(variable_index, agents):
-    item = (variable_index - 1) % len(agents)
-    agent = (variable_index - 1) // len(agents)
+    item = ((variable_index - 1) % len(agents)) + 1
+    agent = ((variable_index - 1) // len(agents)) + 1
     return (agent,item)
 
 ## Builds the clause expressing that an agent must receive at least one item
