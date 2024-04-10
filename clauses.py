@@ -23,6 +23,15 @@ class Clause(ABC,object):
     def get_concerned_objects(self):
         pass
 
+    def get_variables(self):
+        res = []
+        for lit in self.clause:
+            if lit < 0:
+                res.append(-lit)
+            else:
+                res.append(lit)
+        return list(set(res))
+
     def text_translation(self):
         pass
 
@@ -90,6 +99,8 @@ class AtLeastClause(Clause):
     
     def clause_meaning(self):
         return "at_least("+str(self.central_element)+")"
+    
+
     
     
     
