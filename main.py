@@ -118,7 +118,7 @@ if s.solve():
     s.delete()
 elif args.mus: 
     s.delete()
-    print("NO")
+#    print("NO")
     cnf = WCNF()
     for clause in clauses:
         cnf.append(clause, weight=1)
@@ -130,7 +130,7 @@ elif args.mus:
     if MUS == None:
         print("NO")
     else:
-        print("First minimal MUS found:")
+#        print("First minimal MUS found:")
         #print(f"MUS = {MUS}")
         for index in MUS:
             print(f"{clause_as_text_with_meaning(clauses[index-1],clauses_meaning[index-1], SAT_variables_meaning)}")

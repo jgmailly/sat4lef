@@ -22,6 +22,11 @@ not_both_clauses = []
 not_clauses = []
 implication_clauses = []
 
+positive_clauses_meaning = []
+not_both_clauses_meaning = []
+not_clauses_meaning = []
+implication_clauses_meaning = []
+
 def format_clause(clause_line):
     return clause_line.split(" ")
 
@@ -46,15 +51,21 @@ def is_not_clause(clause):
 
 for line in lines:
     if line != '':
-        clause = format_clause(line)
+        splitting = line.split(" : ")
+        clause = format_clause(splitting[1])
+        meaning = splitting[0]
         if is_positive_clause(clause):
             positive_clauses.append(clause)
+            positive_clauses_meaning.append(meaning)
         elif is_not_both_clause(clause):
             not_both_clauses.append(clause)
+            not_both_clauses_meaning.append(meaning)
         elif is_not_clause(clause):
             not_clauses.append(clause)
+            not_clauses_meaning.append(meaning)
         else:
             implication_clauses.append(clause)
+            implication_clauses_meaning.append(meaning)
 
 if cli_args.verbose:
     print("--------------------------------\n")
@@ -78,6 +89,8 @@ all_literals = set()
 
 for clause in positive_clauses:
     node = ClauseNode("at-least-one-object-per-agent")
+    meaning = positive_clauses_meaning[positive_clauses.index(clause)]
+    node.set_clause_meaning(meaning)
     for literal in clause:
         all_literals.add(literal)
         node.add_literal(literal)
@@ -85,6 +98,8 @@ for clause in positive_clauses:
 
 for clause in not_both_clauses:
     node = ClauseNode("at-most-one-agent-per-object")
+    meaning = not_both_clauses_meaning[not_both_clauses.index(clause)]
+    node.set_clause_meaning(meaning)
     for literal in clause:
         all_literals.add(literal)
         node.add_literal(literal)
@@ -92,6 +107,8 @@ for clause in not_both_clauses:
 
 for clause in not_clauses:
     node = ClauseNode("lef-clause")
+    meaning = not_clauses_meaning[not_clauses.index(clause)]
+    node.set_clause_meaning(meaning)
     for literal in clause:
         all_literals.add(literal)
         node.add_literal(literal)
@@ -99,6 +116,8 @@ for clause in not_clauses:
 
 for clause in implication_clauses:
     node = ClauseNode("lef-clause")
+    meaning = implication_clauses_meaning[implication_clauses.index(clause)]
+    node.set_clause_meaning(meaning)
     for literal in clause:
         all_literals.add(literal)
         node.add_literal(literal)
