@@ -5,6 +5,13 @@ class ClauseNode:
         self.node_type = node_type
         # node types are: top, bottom, var, at-least-one-object-per-agent, at-most-one-agent-per-object, lef-clause
         self.literals = []
+        self.clause_meaning = None
+
+    def set_clause_meaning(self, meaning):
+        self.clause_meaning = meaning
+
+    def get_clause_meaning(self):
+        return self.clause_meaning
 
     def get_node_type(self):
         return self.node_type
@@ -20,6 +27,8 @@ class ClauseNode:
             return self.node_type
         
         string_result = ""
+        if self.get_clause_meaning() != None:
+            string_result = self.get_clause_meaning() + " : "
         for literal in self.literals[:-1]:
             string_result += literal + ","
         string_result += self.literals[-1]
