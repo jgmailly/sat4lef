@@ -1,4 +1,7 @@
 from graphviz import Digraph
+import sys
+from clauses import *
+from utils import *
 
 class ClauseNode:
     def __init__(self, node_type):
@@ -69,6 +72,75 @@ class ExplanationGraph:
         self.edges = []
         self.activations = []
 
+    def init_from_list_of_clauses(self, list_clauses):
+        # top, bottom, var, at-least-one-object-per-agent, at-most-one-agent-per-object, lef-clause
+
+        top = ClauseNode("top")
+        bottom = ClauseNode("bottom")
+        self.nodes.append(top)
+        self.nodes.append(bottom)
+        
+        for clause in list_clauses:
+            if isinstance(clause, AtLeastClause):
+                if clause.orientation == "agent":
+                    node_type = "at-least-one-object-per-agent"
+                else:
+                    sys.exit("Redundant encoding not supported")
+                node = ClauseNode(node_type)
+
+            elif isinstance(clause, AtMostClause):
+                if clause.orientation == "agent":
+                    node_type = "at-most-one-agent-per-object"
+                else:
+                    sys.exit("Redundant encoding not supported")
+                node  = ClauseNode(node_type)
+            elif isinstance(clause, LefClause):
+                node = ClauseNode("lef-clause")
+            else:
+                sys.exit("Unknown type of clause")
+            for literal in clause.get_translated_clause():
+                node.add_literal(literal)
+            node.set_clause_meaning(clause.get_clause_meaning())
+            self.nodes.append(node)
+
+        variables = set()
+        for node in self.nodes():
+            for literal in node.get_literals():
+                if literal[0] == "-":
+                    variables.add(literal[1:])
+                else:
+                    variables.add(literal)
+        for variable in variables:
+            node = ClauseNode("var")
+            node.add_literal(variable)
+            self.nodes.append(node)
+
+        for node1 in graph.get_nodes():
+            if node1.get_node_type() == "at-least-one-object-per-agent":
+                graph.add_edge(top, node1)
+            if node1.get_node_type() == "at-most-one-agent-per-object":
+                graph.add_edge(node1, bottom)
+            if node1.get_node_type() == "lef-clause" and len(node1.get_literals()) == 1:
+                graph.add_edge(node1, bottom)
+            for node2 in graph.get_nodes():
+                if node1.get_node_type() == "at-least-one-object-per-agent" and node2.get_node_type() == "var":
+                    if node2.get_literals()[0] in node1.get_literals():
+                        graph.add_edge(node1,node2)
+                if node1.get_node_type() == "var" and node2.get_node_type() == "at-most-one-agent-per-object":
+                    literal = node1.get_literals()[0]
+                    if "-" + literal in node2.get_literals():
+                        graph.add_edge(node1, node2)
+                if node1.get_node_type() == "lef-clause" and node2.get_node_type() == "var":
+                    if node2.get_literals()[0] in node1.get_literals():
+                        graph.add_edge(node1, node2)
+                if node1.get_node_type() == "var" and node2.get_node_type() == "lef-clause":
+                    literal = node1.get_literals()[0]
+                    if "-" + literal in node2.get_literals():
+                        graph.add_edge(node1, node2)
+
+        
+            
+        
     def get_edges(self):
         return self.edges
 
