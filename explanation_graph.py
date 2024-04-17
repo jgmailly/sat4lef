@@ -242,8 +242,7 @@ class ExplanationGraph:
         successors = []
         successor = activation.copy()
         hasActivatedClause = False
-
-        index = -1
+        indexes = []
         for node in self.get_clause_nodes():
             index = node.get_node_id_in_graph(self)
             if not activation[index]:
@@ -256,25 +255,25 @@ class ExplanationGraph:
                 if all_pred_activated:
                     successor[index] = True
                     hasActivatedClause = True
-                    break
-                    
-
+                    indexes.append(index)
         if not hasActivatedClause:
-            return []
-        
-        #print(f"Activation of clause node {index}: {self.nodes[index].content()}")
-
-        successor_nodes = self.get_successors(self.nodes[index])
+            return []      
+        successors.append(successor)      
+        new_successors = self.get_all_successors(indexes,0,successor,[]) 
+        return successors + new_successors
+    
+    def get_all_successors(self, indexes, index, successor, all_successors):
+        if index == len(indexes):
+            all_successors.append(successor)
+            return all_successors
+        successor_nodes = self.get_successors(self.nodes[indexes[index]])
         for successor_node in successor_nodes:
             successor_index = successor_node.get_node_id_in_graph(self)
             new_successor = successor.copy()
             new_successor[successor_index] = True
-            successors.append(new_successor)
-            #print(f"Activation of var node {successor_index}: {self.nodes[successor_index].content()} - successor of node {index}: {self.nodes[index].content()}")
-            #print(f"Successor without var node: {successor}")
-            #print(f"Successor with var node: {new_successor}")
-        
-        return successors
+            all_successors = self.get_all_successors(indexes,index+1,new_successor,all_successors)
+        return all_successors
+
     
     def activate(self, save=False):
         new_activation = []

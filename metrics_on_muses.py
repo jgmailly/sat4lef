@@ -3,45 +3,72 @@ import math
 
 from utils import *
 from lef_mus import *
-from explanation_graph_bis import *
+from explanation_graph import *
 
 
-def min_agents_muses(muses):
+def min_metric_muses(muses, metric):
     res = []
-    min_agents = math.inf
+    min_metric = math.inf
     for mus in muses:
-        concerned_agents = []
-        for clause in mus:
-            concerned_agents = list(set(concerned_agents) | set(clause.get_concerned_agents()))
-        if len(concerned_agents) == min_agents:
+        value_metric = metric(mus)        
+        if value_metric == min_metric:
             res.append(mus)      
-        elif len(concerned_agents) < min_agents:
+        elif value_metric < min_metric:
             res.clear()
             res.append(mus)
-            min_agents = len(concerned_agents)
+            min_metric = value_metric
+    print(min_metric)
     return res
 
-def min_variables_muses(muses):
-    res = []
-    min_var = math.inf
-    for mus in muses:
-        vars = []
-        for clause in mus:
-            vars = list(set(vars) | set(clause.get_variables()))  
-        if len(vars) == min_var:
-            res.append(mus)      
-        elif len(vars) < min_var:
-            res.clear()
-            res.append(mus)
-            min_var = len(vars)
-    return res
+def agents_metric(mus):
+    concerned_agents = []
+    for clause in mus:
+        concerned_agents = list(set(concerned_agents) | set(clause.get_concerned_agents()))       
+    return len(concerned_agents)
+
+def variables_metric(mus):
+    vars = []
+    for clause in mus:
+        vars = list(set(vars) | set(clause.get_variables()))  
+    return len(vars)
+
+def breadth_metric(mus):
+    graph = ExplanationGraph()
+    graph.init_from_list_of_clauses(mus)
+    activations = graph.activate()
+    count = 0
+    for activation in activations:
+        for index in range(len(activation)):
+            if graph.nodes[index].node_type == "bottom":
+                if activation[index]:
+                    count += 1
+                break
+    return count
+
+def length_metric(mus):
+    graph = ExplanationGraph()
+    graph.init_from_list_of_clauses(mus)
+    #print(graph.activate())
+    return len(graph.activate())
+
+def depth_metric(mus):
+    graph = ExplanationGraph()
+    graph.init_from_list_of_clauses(mus)
+    activations = graph.activate()
+    depth = 0
+    return depth
             
 def get_graph_metric(muses):
-    for mus in muses:
-        print(mus)
-        graph = ExplanationGraphBis()
-        graph.init_from_list_of_clauses(mus)
-        print(graph.to_string())
+    mus = muses[0]
+    #for mus in muses:
+    print("mus: ")
+    print(mus)
+    graph = ExplanationGraph()
+    graph.init_from_list_of_clauses(mus)
+    print("graph: ")
+    print(graph.to_string())
+    print("activation: ")
+    print(graph.activate())
 
 
 def main():
@@ -62,6 +89,8 @@ def main():
     nb_min_mus = 0
     nb_min_agents_min_mus = 0
     nb_min_var_min_mus = 0
+    nb_min_length_min_mus = 0
+    nb_min_breadth_min_mus = 0
 
     nb_min_mus_redundant = 0
     nb_min_agents_min_mus_redundant = 0
@@ -93,20 +122,28 @@ def main():
             nb_min_mus += len(min_muses) 
             #print(str(len(min_muses))+" min muses:")
             #print(min_muses)
-            min_agents_min_muses = min_agents_muses(min_muses)
+            min_agents_min_muses = min_metric_muses(min_muses,agents_metric)
             nb_min_agents_min_mus += len(min_agents_min_muses)
             # print(str(len(min_agents_min_muses))+" min agents min muses:")
             # print(min_agents_min_muses)
-            min_var_min_muses = min_variables_muses(min_muses)
+            min_var_min_muses = min_metric_muses(min_muses,variables_metric)
             nb_min_var_min_mus +=  len(min_var_min_muses)
             #print(str(len(min_var_min_muses))+" min variables min muses:")
             #print(min_var_min_muses)
+            min_length_min_muses = min_metric_muses(min_muses,length_metric)
+            nb_min_length_min_mus +=  len(min_length_min_muses)
+            #print(str(len(min_length_min_muses))+" min length min muses:")
+            #print(min_length_min_muses)
+            min_breadth_min_muses = min_metric_muses(min_muses,breadth_metric)
+            nb_min_breadth_min_mus +=  len(min_breadth_min_muses)
+            print(str(len(min_breadth_min_muses))+" min breadth min muses:")
+            print(min_breadth_min_muses)
             #get_graph_metric(min_muses)
         else:
             last_instance = True
             continue
 
-
+        continue
         
         encoding.sat_encoding(True)
 
