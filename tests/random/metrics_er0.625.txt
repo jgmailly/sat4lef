@@ -1,0 +1,79 @@
+
+
+===================================
+n = 3
+sample size = 100
+nb false instances = 100
+----------BASIC ENCODING----------
+average number of minimum MUSes: 4.38
+average number of min agents minimum MUSes: 2.56
+average number of min variables minimum MUSes: 4.32
+----------REDUNDANT ENCODING----------
+average number of minimum MUSes: 6.39
+average number of min agents minimum MUSes: 2.38
+average number of min variables minimum MUSes: 6.39
+
+===================================
+n = 4
+sample size = 100
+nb false instances = 100
+----------BASIC ENCODING----------
+average number of minimum MUSes: 8.37
+average number of min agents minimum MUSes: 3.98
+average number of min variables minimum MUSes: 8.03
+----------REDUNDANT ENCODING----------
+average number of minimum MUSes: 11.81
+average number of min agents minimum MUSes: 3.09
+average number of min variables minimum MUSes: 11.81
+
+===================================
+n = 5
+sample size = 100
+nb false instances = 100
+----------BASIC ENCODING----------
+average number of minimum MUSes: 20.76
+average number of min agents minimum MUSes: 10.82
+average number of min variables minimum MUSes: 17.91
+----------REDUNDANT ENCODING----------
+average number of minimum MUSes: 24.21
+average number of min agents minimum MUSes: 7.43
+average number of min variables minimum MUSes: 24.2
+
+===================================
+n = 6
+sample size = 100
+nb false instances = 100
+----------BASIC ENCODING----------
+average number of minimum MUSes: 52.04
+average number of min agents minimum MUSes: 14.93
+average number of min variables minimum MUSes: 49.26
+----------REDUNDANT ENCODING----------
+average number of minimum MUSes: 67.44
+average number of min agents minimum MUSes: 11.3
+average number of min variables minimum MUSes: 67.44
+
+===================================
+n = 7
+sample size = 100
+nb false instances = 100
+----------BASIC ENCODING----------
+average number of minimum MUSes: 172.45
+average number of min agents minimum MUSes: 29.04
+average number of min variables minimum MUSes: 168.55
+----------REDUNDANT ENCODING----------
+average number of minimum MUSes: 309.68
+average number of min agents minimum MUSes: 167.08
+average number of min variables minimum MUSes: 302.69
+
+===================================
+n = 8
+sample size = 100
+nb false instances = 100
+----------BASIC ENCODING----------
+average number of minimum MUSes: 436.95
+average number of min agents minimum MUSes: 38.95
+average number of min variables minimum MUSes: 433.76
+----------REDUNDANT ENCODING----------
+average number of minimum MUSes: 458.13
+average number of min agents minimum MUSes: 169.28
+average number of min variables minimum MUSes: 458.03

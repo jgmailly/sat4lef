@@ -152,7 +152,11 @@ class LefMus:
         elif mus:
             s.delete()
             cnf = WCNF()
-            for clause in base_cnf:
+            for clause in base_cnf: #self.clauses:
+                #if isinstance(clause, AtLeastClause):
+                #    cnf.append(clause.get_clause(), weight=1)
+                #else:  
+                #    cnf.append(clause.get_clause(), weight=0.002)
                 cnf.append(clause, weight=1)
             #print(cnf)
             #musx = MUSX(cnf,verbosity=0)
@@ -207,10 +211,13 @@ def main():
     parser.add_argument("--mus", action="store_true", help="if set compute a mus instead of the allocation (only works if formula is unsat)")
     parser.add_argument("--enummin", action="store_true", help="enumerate the min MUSes")
     parser.add_argument("--enumall", action="store_true", help="enumerate all the MUSes")
+    parser.add_argument("--write", action="store_true", help="write in the output file")
     args = parser.parse_args()
     n_args = len(sys.argv)
     path = os.getcwd()
     nb_false_instances = 0
+    counter = 0
+    last_instance = False
 
     nb_clauses = 0
     nb_clauses_redundant = 0
@@ -224,14 +231,15 @@ def main():
     nb_min_mus_redundant = 0
     min_mus_size_redundant = 0
     max_mus_size_redundant = 0
-    for i in range(args.sample_size):
-        print("\ncounter: "+str(i+1))
-        filename = args.model+"/test_par"+str(args.parameter)+"_"+str(args.nb_agents)+"ag_"+str(i+1)
+    while counter < args.sample_size:
+        #if args.verbose:
+        print("\ncounter: "+str(counter))
+        filename = args.model+"/test_par"+str(args.parameter)+"_"+str(args.nb_agents)+"ag_"+str(counter+1)
         location = os.path.join(path, "tests/random/"+filename)
-        if (not os.path.exists(location+".soc")):
+        if (not os.path.exists(location+".soc") or last_instance):
             graph = generate_graph(args.model,args.nb_agents,n_args)
             print_social_network(graph,location,filename)
-        if (not os.path.exists(location+".pref")):
+        if (not os.path.exists(location+".pref") or last_instance):
             print_preferences(location,args.nb_agents)
         encoding = LefMus(location)
         encoding.sat_encoding(False)
@@ -241,13 +249,18 @@ def main():
         # print("clauses: ")
         # for clause in encoding.get_clauses():
         #     print(clause.clause_meaning())
-        nb_clauses += encoding.get_nb_clauses()
         #print(encoding.compute_mus(args.mus,args.enummin,args.enumall,args.verbose)) 
         if not encoding.compute_mus(args.mus,args.enummin,args.enumall,args.verbose)[0]:
+            nb_clauses += encoding.get_nb_clauses()
             nb_false_instances += 1
+            last_instance = False
+            counter += 1
             nb_mus += len(encoding.get_all_muses())
             nb_min_mus += len(encoding.get_minimum_muses())
             if (len(encoding.get_minimum_muses()) > 0):
+                #if (encoding.get_mus_minimum_size() >= 2):
+                #    print("counterexample for instance "+str(counter))
+                #    print(encoding.get_minimum_muses())
                 min_mus_size += encoding.get_mus_minimum_size()
                 max_mus_size += encoding.get_mus_maximum_size()
             #if (len(encoding.get_minimum_muses()) > 0):
@@ -259,7 +272,21 @@ def main():
             #print("total number of MUSes: "+str(len(encoding.get_all_muses())))
             #print("minimum size of a MUS: "+str(encoding.get_minimum_muses()[0][1]))
             #print("maximum size of a MUS: "+str(encoding.get_all_muses()[-1][1]))
+        else:
+            last_instance = True
+            continue
+        
+
         encoding.sat_encoding(True)
+
+        # print(encoding.get_clauses())
+
+        # firstclause = encoding.get_clauses()[61]
+        # print(firstclause)
+        # print(firstclause.get_clause())
+        # print(firstclause.get_translated_clause())
+        # print(firstclause.text_translation())
+
         if args.verbose:
             print("redundant encoding done")
         #print("number of clauses: "+str(encoding.get_nb_clauses()))
@@ -280,33 +307,34 @@ def main():
         #print(redundant_encoding.get_nb_clauses())
         #print(redundant_encoding.get_mus(False,False))
                 
-    output_name = "results_"+str(args.model)+str(args.parameter)
-    output_location = os.path.join(path, "tests/random/"+output_name)
-    output_file = open(output_location + ".txt",'a')
-    output_file.write("\n\n===================================")
-    output_file.write("\nn = "+str(args.nb_agents))
-    output_file.write("\nsample size = "+str(args.sample_size))
-    output_file.write("\nnb false instances = "+str(nb_false_instances))
-    output_file.write("\n===================================")
-    output_file.write("\n----------BASIC ENCODING----------")
-    output_file.write("\naverage number of clauses: "+str(nb_clauses / args.sample_size))
-    if nb_false_instances > 0:
-        if args.enummin:
-            output_file.write("\naverage number of minimum MUSes: "+str(nb_min_mus / nb_false_instances))
-            output_file.write("\naverage minimum size of a MUS: "+str(min_mus_size / nb_false_instances))
-        if args.enumall:
-            output_file.write("\naverage total number of MUSes: "+str(nb_mus / nb_false_instances))
-            output_file.write("\naverage maximum size of a MUS: "+str(max_mus_size / nb_false_instances))
-    output_file.write("\n----------REDUNDANT ENCODING----------")
-    output_file.write("\naverage number of clauses: "+str(nb_clauses_redundant / args.sample_size))
-    if nb_false_instances > 0:
-        if args.enummin:
-            output_file.write("\naverage number of minimum MUSes: "+str(nb_min_mus_redundant / nb_false_instances))
-            output_file.write("\naverage minimum size of a MUS: "+str(min_mus_size_redundant / nb_false_instances))
-        if args.enumall:
-            output_file.write("\naverage total number of MUSes: "+str(nb_mus_redundant / nb_false_instances))
-            output_file.write("\naverage maximum size of a MUS: "+str(max_mus_size_redundant / nb_false_instances))
-    output_file.close()
+    if args.write:
+        output_name = "results_"+str(args.model)+str(args.parameter)
+        output_location = os.path.join(path, "tests/random/"+output_name)
+        output_file = open(output_location + ".txt",'a')
+        output_file.write("\n\n===================================")
+        output_file.write("\nn = "+str(args.nb_agents))
+        output_file.write("\nsample size = "+str(args.sample_size))
+        output_file.write("\nnb false instances = "+str(nb_false_instances))
+        output_file.write("\n===================================")
+        output_file.write("\n----------BASIC ENCODING----------")
+        output_file.write("\naverage number of clauses: "+str(nb_clauses / args.sample_size))
+        if nb_false_instances > 0:
+            if args.enummin:
+                output_file.write("\naverage number of minimum MUSes: "+str(nb_min_mus / nb_false_instances))
+                output_file.write("\naverage minimum size of a MUS: "+str(min_mus_size / nb_false_instances))
+            if args.enumall:
+                output_file.write("\naverage total number of MUSes: "+str(nb_mus / nb_false_instances))
+                output_file.write("\naverage maximum size of a MUS: "+str(max_mus_size / nb_false_instances))
+        output_file.write("\n----------REDUNDANT ENCODING----------")
+        output_file.write("\naverage number of clauses: "+str(nb_clauses_redundant / args.sample_size))
+        if nb_false_instances > 0:
+            if args.enummin:
+                output_file.write("\naverage number of minimum MUSes: "+str(nb_min_mus_redundant / nb_false_instances))
+                output_file.write("\naverage minimum size of a MUS: "+str(min_mus_size_redundant / nb_false_instances))
+            if args.enumall:
+                output_file.write("\naverage total number of MUSes: "+str(nb_mus_redundant / nb_false_instances))
+                output_file.write("\naverage maximum size of a MUS: "+str(max_mus_size_redundant / nb_false_instances))
+        output_file.close()
 
 
 
