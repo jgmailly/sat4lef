@@ -85,14 +85,14 @@ class ExplanationGraph:
                 if clause.orientation == "agent":
                     node_type = "at-least-one-object-per-agent"
                 else:
-                    sys.exit("Redundant encoding not supported")
+                    sys.exit("Redundant encoding not supported (1)")
                 node = ClauseNode(node_type)
 
             elif isinstance(clause, AtMostClause):
-                if clause.orientation == "agent":
+                if clause.orientation == "object":
                     node_type = "at-most-one-agent-per-object"
                 else:
-                    sys.exit("Redundant encoding not supported")
+                    sys.exit("Redundant encoding not supported (2)")
                 node  = ClauseNode(node_type)
             elif isinstance(clause, LefClause):
                 node = ClauseNode("lef-clause")
@@ -104,7 +104,7 @@ class ExplanationGraph:
             self.nodes.append(node)
 
         variables = set()
-        for node in self.nodes():
+        for node in self.nodes:
             for literal in node.get_literals():
                 if literal[0] == "-":
                     variables.add(literal[1:])
@@ -115,28 +115,28 @@ class ExplanationGraph:
             node.add_literal(variable)
             self.nodes.append(node)
 
-        for node1 in graph.get_nodes():
+        for node1 in self.get_nodes():
             if node1.get_node_type() == "at-least-one-object-per-agent":
-                graph.add_edge(top, node1)
+                self.add_edge(top, node1)
             if node1.get_node_type() == "at-most-one-agent-per-object":
-                graph.add_edge(node1, bottom)
+                self.add_edge(node1, bottom)
             if node1.get_node_type() == "lef-clause" and len(node1.get_literals()) == 1:
-                graph.add_edge(node1, bottom)
-            for node2 in graph.get_nodes():
+                self.add_edge(node1, bottom)
+            for node2 in self.get_nodes():
                 if node1.get_node_type() == "at-least-one-object-per-agent" and node2.get_node_type() == "var":
                     if node2.get_literals()[0] in node1.get_literals():
-                        graph.add_edge(node1,node2)
+                        self.add_edge(node1,node2)
                 if node1.get_node_type() == "var" and node2.get_node_type() == "at-most-one-agent-per-object":
                     literal = node1.get_literals()[0]
                     if "-" + literal in node2.get_literals():
-                        graph.add_edge(node1, node2)
+                        self.add_edge(node1, node2)
                 if node1.get_node_type() == "lef-clause" and node2.get_node_type() == "var":
                     if node2.get_literals()[0] in node1.get_literals():
-                        graph.add_edge(node1, node2)
+                        self.add_edge(node1, node2)
                 if node1.get_node_type() == "var" and node2.get_node_type() == "lef-clause":
                     literal = node1.get_literals()[0]
                     if "-" + literal in node2.get_literals():
-                        graph.add_edge(node1, node2)
+                        self.add_edge(node1, node2)
 
         
             

@@ -2,6 +2,9 @@ import sys
 import argparse
 from utils import *
 
+from clauses import *
+from explanation_graph import *
+
 from pysat.solvers import Solver
 from pysat.examples.rc2 import RC2
 from pysat.examples.musx import MUSX
@@ -54,10 +57,13 @@ for agent in agents:
 
 clauses = []
 clauses_meaning = [] # clauses_meaning[i] corresponds to clauses[i]
+clauses_struct = [] # Clause objects
 
 for agent in agents:
     clauses.append(at_least_one_item(agent, agents, items)) # clause \phi_{alloc}^{\geq 1}(i)
     clauses_meaning.append(f"phi_(alloc)^(>= 1, N)({agent})")
+    clauses_struct.append(AtLeastClause("agent", agent, agents, items))
+    
     for item in items:
         other_agents = agents.copy()
         other_agents.remove(agent)
@@ -65,6 +71,7 @@ for agent in agents:
             if other_agent > agent:
                 clauses.append(agents_do_not_share_items(agent, other_agent, agents, item, items)) # clause \phi_{alloc}^O(o,i,j)
                 clauses_meaning.append(f"phi_(alloc)^(<= 1, O)({item}, {agent}, {other_agent})")
+                clauses_struct.append(AtMostClause("object", item, agent, other_agent, agents, items))
 
             
 for edge in social:
@@ -73,26 +80,32 @@ for edge in social:
 
         other_items = items.copy()
         other_items.remove(item)
+        possible_items = []
         for other_item in other_items:
             if agent_prefers(preferences, edge[1], other_item, item) and agent_prefers(preferences, edge[0], item, other_item):
                 clause.append(get_SAT_variable(edge[1], agents, other_item, items))
+                possible_items.append(other_item)
 
         #print(f"--- phi_LEF({edge[0]},{edge[1]},{item}) = {clause} = {clause_as_text(clause,SAT_variables_meaning)}")
         clauses.append(clause) # clause \phi_{lef}(i,j,o)
         clauses_meaning.append(f"phi_(lef)({edge[0]},{edge[1]},{item})")
+        clauses_struct.append(LefClause(edge[0],item,edge[1],possible_items,agents,items)) 
         
         # reverse direction of the edge
         clause = [-get_SAT_variable(edge[1], agents, item, items)]
 
         other_items = items.copy()
         other_items.remove(item)
+        possible_items = []
         for other_item in other_items:
             if agent_prefers(preferences, edge[0], other_item, item) and agent_prefers(preferences, edge[1], item, other_item):
                 clause.append(get_SAT_variable(edge[0], agents, other_item, items))
+                possible_items.append(other_item)
 
         #print(f"--- phi_LEF({edge[1]},{edge[0]},{item}) = {clause} = {clause_as_text(clause,SAT_variables_meaning)}")
         clauses.append(clause) # clause \phi_{lef}(i,j,o)
         clauses_meaning.append(f"phi_(lef)({edge[1]},{edge[0]},{item})")
+        clauses_struct.append(LefClause(edge[1],item,edge[0],possible_items,agents,items)) 
 
 if args.redundant:
     for item in items:
@@ -132,8 +145,37 @@ elif args.mus:
     else:
 #        print("First minimal MUS found:")
         #print(f"MUS = {MUS}")
+        MUS_clauses = []
         for index in MUS:
-            print(f"{clause_as_text_with_meaning(clauses[index-1],clauses_meaning[index-1], SAT_variables_meaning)}")
+            ## printing clauses
+            # print(f"{clause_as_text_with_meaning(clauses[index-1],clauses_meaning[index-1], SAT_variables_meaning)}")
+
+            MUS_clauses.append(clauses_struct[index])
+
+        
+
+        graph = ExplanationGraph()
+        graph.init_from_list_of_clauses(MUS_clauses)
+        print("==============================================================")
+        print("=== Graph nodes")
+        print("==============================================================")
+        print(f"nb nodes = {len(graph.get_nodes())}")
+        print(graph.get_nodes())
+        print("==============================================================")
+        print("=== Graph edges")
+        print("==============================================================")
+        print(f"nb edges = {len(graph.get_edges())}")
+        print(graph.get_edges())
+        
+        activations = graph.activate()
+        print("==============================================================")
+        print("=== Graph Activations")
+        print("==============================================================")
+        i = 1
+        print(f"There are {len(activations)} activation steps.")
+        for activation in activations:
+            print(i, ": ", activation)
+            i += 1
 
     if args.enummin or args.enumall: 
         print("==============================================================")
@@ -153,6 +195,7 @@ elif args.mus:
                     for index in mus:
                         print(f"{clause_as_text_with_meaning(clauses[index-1], clauses_meaning[index-1],SAT_variables_meaning)}")
 
-
         print("==============================================================")
         print("Found ", nb_mus, "MUS")
+
+    
