@@ -240,38 +240,38 @@ class ExplanationGraph:
 
     def get_successor_activations(self, activation):
         successors = []
-        successor = activation.copy()
+        successor = activation[0].copy()
         hasActivatedClause = False
         indexes = []
         for node in self.get_clause_nodes():
             index = node.get_node_id_in_graph(self)
-            if not activation[index]:
+            if not activation[0][index]:
                 predecessors = self.get_predecessors(node)
                 all_pred_activated = True
                 for predecessor in predecessors:
                     pred_index = predecessor.get_node_id_in_graph(self)
-                    if not activation[pred_index]:
+                    if not activation[0][pred_index]:
                         all_pred_activated = False
                 if all_pred_activated:
                     successor[index] = True
                     hasActivatedClause = True
                     indexes.append(index)
         if not hasActivatedClause:
-            return []      
-        successors.append(successor)      
-        new_successors = self.get_all_successors(indexes,0,successor,[]) 
+            return []   
+        successors.append((successor,activation[1]+1))      
+        new_successors = self.get_all_successors(indexes,0,successor,[],activation[1]+2) 
         return successors + new_successors
     
-    def get_all_successors(self, indexes, index, successor, all_successors):
+    def get_all_successors(self, indexes, index, successor, all_successors, depth):
         if index == len(indexes):
-            all_successors.append(successor)
+            all_successors.append((successor,depth))
             return all_successors
         successor_nodes = self.get_successors(self.nodes[indexes[index]])
         for successor_node in successor_nodes:
             successor_index = successor_node.get_node_id_in_graph(self)
             new_successor = successor.copy()
             new_successor[successor_index] = True
-            all_successors = self.get_all_successors(indexes,index+1,new_successor,all_successors)
+            all_successors = self.get_all_successors(indexes,index+1,new_successor,all_successors,depth)
         return all_successors
 
     
@@ -283,7 +283,7 @@ class ExplanationGraph:
             else:
                 new_activation.append(False)
             
-        next_activations = [new_activation]
+        next_activations = [(new_activation,0)]
         while next_activations != []:
             next_activation = next_activations.pop(0)
             if next_activation not in self.activations:
@@ -307,3 +307,5 @@ class ExplanationGraph:
                 act_index += 1
 
         return self.activations
+
+    

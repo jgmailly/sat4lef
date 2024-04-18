@@ -17,7 +17,7 @@ def min_metric_muses(muses, metric):
             res.clear()
             res.append(mus)
             min_metric = value_metric
-    print(min_metric)
+    #print(min_metric)
     return res
 
 def agents_metric(mus):
@@ -40,7 +40,7 @@ def breadth_metric(mus):
     for activation in activations:
         for index in range(len(activation)):
             if graph.nodes[index].node_type == "bottom":
-                if activation[index]:
+                if activation[0][index]:
                     count += 1
                 break
     return count
@@ -55,8 +55,15 @@ def depth_metric(mus):
     graph = ExplanationGraph()
     graph.init_from_list_of_clauses(mus)
     activations = graph.activate()
-    depth = 0
-    return depth
+    max = 0
+    for activation in activations:
+        for index in range(len(activation)):
+            if graph.nodes[index].node_type == "bottom":
+                if activation[0][index]:
+                    if activation[1] > max:
+                        max = activation[1]
+                break
+    return max
             
 def get_graph_metric(muses):
     mus = muses[0]
@@ -91,6 +98,7 @@ def main():
     nb_min_var_min_mus = 0
     nb_min_length_min_mus = 0
     nb_min_breadth_min_mus = 0
+    nb_min_depth_min_mus = 0
 
     nb_min_mus_redundant = 0
     nb_min_agents_min_mus_redundant = 0
@@ -136,8 +144,12 @@ def main():
             #print(min_length_min_muses)
             min_breadth_min_muses = min_metric_muses(min_muses,breadth_metric)
             nb_min_breadth_min_mus +=  len(min_breadth_min_muses)
-            print(str(len(min_breadth_min_muses))+" min breadth min muses:")
-            print(min_breadth_min_muses)
+            #print(str(len(min_breadth_min_muses))+" min breadth min muses:")
+            #print(min_breadth_min_muses)
+            min_depth_min_muses = min_metric_muses(min_muses,depth_metric)
+            nb_min_depth_min_mus +=  len(min_depth_min_muses)
+            #print(str(len(min_depth_min_muses))+" min depth min muses:")
+            #print(min_depth_min_muses)
             #get_graph_metric(min_muses)
         else:
             last_instance = True
@@ -175,6 +187,9 @@ def main():
             output_file.write("\naverage number of minimum MUSes: "+str(nb_min_mus / nb_false_instances))
             output_file.write("\naverage number of min agents minimum MUSes: "+str(nb_min_agents_min_mus / nb_false_instances))
             output_file.write("\naverage number of min variables minimum MUSes: "+str(nb_min_var_min_mus / nb_false_instances))
+            output_file.write("\naverage number of min length minimum MUSes: "+str(nb_min_length_min_mus / nb_false_instances))
+            output_file.write("\naverage number of min breadth minimum MUSes: "+str(nb_min_breadth_min_mus / nb_false_instances))
+            output_file.write("\naverage number of min depth minimum MUSes: "+str(nb_min_depth_min_mus / nb_false_instances))
         output_file.write("\n----------REDUNDANT ENCODING----------")
         if nb_false_instances > 0:
             output_file.write("\naverage number of minimum MUSes: "+str(nb_min_mus_redundant / nb_false_instances))
