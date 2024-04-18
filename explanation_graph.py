@@ -175,7 +175,7 @@ class ExplanationGraph:
     def get_clause_nodes(self):
         clause_nodes = []
         for node in self.nodes:
-            if node.get_node_type() in ["at-least-one-object-per-agent", "at-most-one-agent-per-object", "lef-clause"]:
+            if node.get_node_type() in ["at-least-one-object-per-agent", "at-most-one-agent-per-object", "at-least-one-agent-per-object", "at-most-one-object-per-agent", "lef-clause"]:
                 clause_nodes.append(node)
         return clause_nodes
         
