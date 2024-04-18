@@ -206,7 +206,7 @@ class ExplanationGraph:
             else:
                 str_result += f"[shape=box, label=\"{node.content()}\""
 
-            if activation[index]:
+            if activation[0][index]:
                 str_result += ", style=filled, fillcolor=green"
 
             str_result += "];\n"
