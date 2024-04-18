@@ -4,6 +4,7 @@ from utils import *
 
 from clauses import *
 from explanation_graph import *
+from lef_mus import *
 
 from pysat.solvers import Solver
 from pysat.examples.rc2 import RC2
@@ -27,6 +28,7 @@ parser.add_argument("--redundant", action="store_true", help="add redundant stru
 args = parser.parse_args()
 
 preferences = dict()
+
 
 preferences_lines = args.pref_file.read().splitlines()
 
@@ -59,63 +61,74 @@ clauses = []
 clauses_meaning = [] # clauses_meaning[i] corresponds to clauses[i]
 clauses_struct = [] # Clause objects
 
-for agent in agents:
-    clauses.append(at_least_one_item(agent, agents, items)) # clause \phi_{alloc}^{\geq 1}(i)
-    clauses_meaning.append(f"phi_(alloc)^(>= 1, N)({agent})")
-    clauses_struct.append(AtLeastClause("agent", agent, agents, items))
-    
-    for item in items:
-        other_agents = agents.copy()
-        other_agents.remove(agent)
-        for other_agent in other_agents:
-            if other_agent > agent:
-                clauses.append(agents_do_not_share_items(agent, other_agent, agents, item, items)) # clause \phi_{alloc}^O(o,i,j)
-                clauses_meaning.append(f"phi_(alloc)^(<= 1, O)({item}, {agent}, {other_agent})")
-                clauses_struct.append(AtMostClause("object", item, agent, other_agent, agents, items))
+lefmus = LefMus(args.pref_file.name.split(".")[0])
+lefmus.sat_encoding(False)
 
-            
-for edge in social:
-    for item in items:
-        clause = [-get_SAT_variable(edge[0], agents, item, items)]
+clauses_struct = lefmus.get_clauses()
 
-        other_items = items.copy()
-        other_items.remove(item)
-        possible_items = []
-        for other_item in other_items:
-            if agent_prefers(preferences, edge[1], other_item, item) and agent_prefers(preferences, edge[0], item, other_item):
-                clause.append(get_SAT_variable(edge[1], agents, other_item, items))
-                possible_items.append(other_item)
+for clause in clauses_struct:
+    clauses.append(clause.get_clause())
+    clauses_meaning.append(clause.get_clause_meaning())
 
-        #print(f"--- phi_LEF({edge[0]},{edge[1]},{item}) = {clause} = {clause_as_text(clause,SAT_variables_meaning)}")
-        clauses.append(clause) # clause \phi_{lef}(i,j,o)
-        clauses_meaning.append(f"phi_(lef)({edge[0]},{edge[1]},{item})")
-        clauses_struct.append(LefClause(edge[0],item,edge[1],possible_items,agents,items)) 
-        
-        # reverse direction of the edge
-        clause = [-get_SAT_variable(edge[1], agents, item, items)]
 
-        other_items = items.copy()
-        other_items.remove(item)
-        possible_items = []
-        for other_item in other_items:
-            if agent_prefers(preferences, edge[0], other_item, item) and agent_prefers(preferences, edge[1], item, other_item):
-                clause.append(get_SAT_variable(edge[0], agents, other_item, items))
-                possible_items.append(other_item)
 
-        #print(f"--- phi_LEF({edge[1]},{edge[0]},{item}) = {clause} = {clause_as_text(clause,SAT_variables_meaning)}")
-        clauses.append(clause) # clause \phi_{lef}(i,j,o)
-        clauses_meaning.append(f"phi_(lef)({edge[1]},{edge[0]},{item})")
-        clauses_struct.append(LefClause(edge[1],item,edge[0],possible_items,agents,items)) 
-
-if args.redundant:
-    for item in items:
-        clauses.append(at_least_one_agent(item, agents, items))
-        clauses_meaning.append(f"phi_(alloc)^(>= 1, 0)({item})")
-        other_items = [other_item for other_item in items if other_item > item]
-        for agent in agents:
-            for other_item in other_items:
-                clauses.append(items_do_not_share_agents(agent, agents, item, other_item, items)) # clause \phi_{alloc}^N(o,i,j)
-                clauses_meaning.append(f"phi_(alloc)^(<= 1,N)({item},{agent},{other_agent})")
+##for agent in agents:
+##    clauses.append(at_least_one_item(agent, agents, items)) # clause \phi_{alloc}^{\geq 1}(i)
+##    clauses_meaning.append(f"phi_(alloc)^(>= 1, N)({agent})")
+##    clauses_struct.append(AtLeastClause("agent", agent, agents, items))
+##    
+##    for item in items:
+##        other_agents = agents.copy()
+##        other_agents.remove(agent)
+##        for other_agent in other_agents:
+##            if other_agent > agent:
+##                clauses.append(agents_do_not_share_items(agent, other_agent, agents, item, items)) # clause \phi_{alloc}^O(o,i,j)
+##                clauses_meaning.append(f"phi_(alloc)^(<= 1, O)({item}, {agent}, {other_agent})")
+##                clauses_struct.append(AtMostClause("object", item, agent, other_agent, agents, items))
+##
+##            
+##for edge in social:
+##    for item in items:
+##        clause = [-get_SAT_variable(edge[0], agents, item, items)]
+##
+##        other_items = items.copy()
+##        other_items.remove(item)
+##        possible_items = []
+##        for other_item in other_items:
+##            if agent_prefers(preferences, edge[1], other_item, item) and agent_prefers(preferences, edge[0], item, other_item):
+##                clause.append(get_SAT_variable(edge[1], agents, other_item, items))
+##                possible_items.append(other_item)
+##
+##        #print(f"--- phi_LEF({edge[0]},{edge[1]},{item}) = {clause} = {clause_as_text(clause,SAT_variables_meaning)}")
+##        clauses.append(clause) # clause \phi_{lef}(i,j,o)
+##        clauses_meaning.append(f"phi_(lef)({edge[0]},{edge[1]},{item})")
+##        clauses_struct.append(LefClause(edge[0],item,edge[1],possible_items,agents,items)) 
+##        
+##        # reverse direction of the edge
+##        clause = [-get_SAT_variable(edge[1], agents, item, items)]
+##
+##        other_items = items.copy()
+##        other_items.remove(item)
+##        possible_items = []
+##        for other_item in other_items:
+##            if agent_prefers(preferences, edge[0], other_item, item) and agent_prefers(preferences, edge[1], item, other_item):
+##                clause.append(get_SAT_variable(edge[0], agents, other_item, items))
+##                possible_items.append(other_item)
+##
+##        #print(f"--- phi_LEF({edge[1]},{edge[0]},{item}) = {clause} = {clause_as_text(clause,SAT_variables_meaning)}")
+##        clauses.append(clause) # clause \phi_{lef}(i,j,o)
+##        clauses_meaning.append(f"phi_(lef)({edge[1]},{edge[0]},{item})")
+##        clauses_struct.append(LefClause(edge[1],item,edge[0],possible_items,agents,items)) 
+##
+##if args.redundant:
+##    for item in items:
+##        clauses.append(at_least_one_agent(item, agents, items))
+##        clauses_meaning.append(f"phi_(alloc)^(>= 1, 0)({item})")
+##        other_items = [other_item for other_item in items if other_item > item]
+##        for agent in agents:
+##            for other_item in other_items:
+##                clauses.append(items_do_not_share_agents(agent, agents, item, other_item, items)) # clause \phi_{alloc}^N(o,i,j)
+##                clauses_meaning.append(f"phi_(alloc)^(<= 1,N)({item},{agent},{other_agent})")
 
       
 #for clause in clauses:
@@ -166,6 +179,10 @@ elif args.mus:
         print("==============================================================")
         print(f"nb edges = {len(graph.get_edges())}")
         print(graph.get_edges())
+        print("==============================================================")
+        print("=== Graph dot")
+        print("==============================================================")
+        print(graph.to_dot())
         
         activations = graph.activate()
         print("==============================================================")

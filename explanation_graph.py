@@ -73,7 +73,7 @@ class ExplanationGraph:
         self.activations = []
 
     def init_from_list_of_clauses(self, list_clauses):
-        # top, bottom, var, at-least-one-object-per-agent, at-most-one-agent-per-object, lef-clause
+        # top, bottom, var, at-least-one-object-per-agent, at-most-one-agent-per-object, lef-clause, at-least-one-agent-per-object, at-most-one-object-per-agent
 
         top = ClauseNode("top")
         bottom = ClauseNode("bottom")
@@ -85,14 +85,14 @@ class ExplanationGraph:
                 if clause.orientation == "agent":
                     node_type = "at-least-one-object-per-agent"
                 else:
-                    sys.exit("Redundant encoding not supported (1)")
+                    node_type = "at-least-one-agent-per-object"
                 node = ClauseNode(node_type)
 
             elif isinstance(clause, AtMostClause):
                 if clause.orientation == "object":
                     node_type = "at-most-one-agent-per-object"
                 else:
-                    sys.exit("Redundant encoding not supported (2)")
+                    node_type = "at-most-one-object-per-agent"
                 node  = ClauseNode(node_type)
             elif isinstance(clause, LefClause):
                 node = ClauseNode("lef-clause")
@@ -122,14 +122,29 @@ class ExplanationGraph:
                 self.add_edge(node1, bottom)
             if node1.get_node_type() == "lef-clause" and len(node1.get_literals()) == 1:
                 self.add_edge(node1, bottom)
+
+            if node1.get_node_type() == "at-least-one-agent-per-object": ## If redondant encoding
+                self.add_edge(top, node1)
+            if node1.get_node_type() == "at-most-one-object-per-agent": ## If redondant encoding
+                self.add_edge(node1? bottom)
+                
             for node2 in self.get_nodes():
                 if node1.get_node_type() == "at-least-one-object-per-agent" and node2.get_node_type() == "var":
                     if node2.get_literals()[0] in node1.get_literals():
                         self.add_edge(node1,node2)
+                if node1.get_node_type() == "at-least-one-agent-per-object" and node2.get_node_type() == "var": ## If redondant encoding
+                    if node2.get_literals()[0] in node1.get_literals():
+                        self.add_edge(node1,node2)
+                        
                 if node1.get_node_type() == "var" and node2.get_node_type() == "at-most-one-agent-per-object":
                     literal = node1.get_literals()[0]
                     if "-" + literal in node2.get_literals():
                         self.add_edge(node1, node2)
+                if node1.get_node_type() == "var" and node2.get_node_type() == "at-most-one-object-per-agent": ## If redondant encoding
+                    literal = node1.get_literals()[0]
+                    if "-" + literal in node2.get_literals():
+                        self.add_edge(node1, node2)
+                        
                 if node1.get_node_type() == "lef-clause" and node2.get_node_type() == "var":
                     if node2.get_literals()[0] in node1.get_literals():
                         self.add_edge(node1, node2)
@@ -137,6 +152,9 @@ class ExplanationGraph:
                     literal = node1.get_literals()[0]
                     if "-" + literal in node2.get_literals():
                         self.add_edge(node1, node2)
+
+            
+        
 
         
             
