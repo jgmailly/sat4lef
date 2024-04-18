@@ -223,12 +223,12 @@ class ExplanationGraph:
             node_name = "n" + str(node.get_node_id_in_graph(self))
 
             if node.get_node_type() in ["top", "bottom", "var"]:
-                if activation[index]:
+                if activation[0][index]:
                     graph.node(name=node_name, shape="ellipse", label=f"{node.content()}", style="filled", fillcolor="green")
                 else:
                     graph.node(name=node_name, shape="ellipse", label=f"{node.content()}")
             else:
-                if activation[index]:
+                if activation[0][index]:
                     graph.node(name=node_name, shape="box", label=f"{node.content()}", style="filled", fillcolor="green")
                 else:
                     graph.node(name=node_name, shape="box", label=f"{node.content()}")
