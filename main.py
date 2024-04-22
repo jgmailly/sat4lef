@@ -176,8 +176,19 @@ elif args.mus:
         i = 1
         print(f"There are {len(activations)} activation steps.")
         for activation in activations:
+            print("==============================================================")
             print(i, ": ", activation)
+            node_index = 0
+            for activated_node in activation[0]:
+                if activated_node:
+#                    print(f"node = {graph.get_nodes()[node_index]}")
+                    text_translation = graph.get_nodes()[node_index].get_text_translation()
+                    if text_translation != None:
+                        print(f"explanation = {text_translation}")
+                node_index += 1
             i += 1
+            print("==============================================================")
+            print(" ")
 
     if args.enummin or args.enumall: 
         print("==============================================================")
