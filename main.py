@@ -69,6 +69,7 @@ clauses_struct = lefmus.get_clauses()
 for clause in clauses_struct:
     clauses.append(clause.get_clause())
     clauses_meaning.append(clause.get_clause_meaning())
+#    print(f"clause = {clause.get_clause()} - clause_meaning = {clause.get_clause_meaning()}")
 
 
 
@@ -157,37 +158,21 @@ elif args.mus:
         print("NO")
     else:
 #        print("First minimal MUS found:")
-        #print(f"MUS = {MUS}")
+#        print(f"MUS = {MUS}")
         MUS_clauses = []
         for index in MUS:
             ## printing clauses
-            # print(f"{clause_as_text_with_meaning(clauses[index-1],clauses_meaning[index-1], SAT_variables_meaning)}")
+#            print(f"{clause_as_text_with_meaning(clauses[index-1],clauses_meaning[index-1], SAT_variables_meaning)}")
 
-            MUS_clauses.append(clauses_struct[index])
-
-        
-
+            MUS_clauses.append(clauses_struct[index-1])
+            
         graph = ExplanationGraph()
         graph.init_from_list_of_clauses(MUS_clauses)
-        print("==============================================================")
-        print("=== Graph nodes")
-        print("==============================================================")
-        print(f"nb nodes = {len(graph.get_nodes())}")
-        print(graph.get_nodes())
-        print("==============================================================")
-        print("=== Graph edges")
-        print("==============================================================")
-        print(f"nb edges = {len(graph.get_edges())}")
-        print(graph.get_edges())
-        print("==============================================================")
-        print("=== Graph dot")
-        print("==============================================================")
-        print(graph.to_dot())
+
+        if args.verbose:
+            print(graph.to_dot())
         
         activations = graph.activate()
-        print("==============================================================")
-        print("=== Graph Activations")
-        print("==============================================================")
         i = 1
         print(f"There are {len(activations)} activation steps.")
         for activation in activations:
