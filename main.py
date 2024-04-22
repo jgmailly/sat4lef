@@ -174,21 +174,25 @@ elif args.mus:
         
         activations = graph.activate()
         i = 1
-        print(f"There are {len(activations)} activation steps.")
+        if args.verbose:
+            print(f"There are {len(activations)} activation steps.")
+        already_activated = [False for i in range(len(activations[0][0]))]
+        
         for activation in activations:
-            print("==============================================================")
-            print(i, ": ", activation)
+#            print("==============================================================")
+#            print(i, ": ", activation)
             node_index = 0
+#            print(f"alread activated = {already_activated}")
             for activated_node in activation[0]:
-                if activated_node:
-#                    print(f"node = {graph.get_nodes()[node_index]}")
+                if activated_node and not already_activated[node_index]:
                     text_translation = graph.get_nodes()[node_index].get_text_translation()
                     if text_translation != None:
-                        print(f"explanation = {text_translation}")
+                        print(text_translation)
                 node_index += 1
             i += 1
-            print("==============================================================")
-            print(" ")
+            already_activated = activation[0]
+#            print("==============================================================")
+#            print(" ")
 
     if args.enummin or args.enumall: 
         print("==============================================================")
