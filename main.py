@@ -62,7 +62,7 @@ clauses_meaning = [] # clauses_meaning[i] corresponds to clauses[i]
 clauses_struct = [] # Clause objects
 
 lefmus = LefMus(args.pref_file.name.split(".")[0])
-lefmus.sat_encoding(False)
+lefmus.sat_encoding(args.redundant)
 
 clauses_struct = lefmus.get_clauses()
 
