@@ -126,7 +126,7 @@ class ExplanationGraph:
             if node1.get_node_type() == "at-least-one-agent-per-object": ## If redondant encoding
                 self.add_edge(top, node1)
             if node1.get_node_type() == "at-most-one-object-per-agent": ## If redondant encoding
-                self.add_edge(node1? bottom)
+                self.add_edge(node1, bottom)
                 
             for node2 in self.get_nodes():
                 if node1.get_node_type() == "at-least-one-object-per-agent" and node2.get_node_type() == "var":

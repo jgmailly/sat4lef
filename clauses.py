@@ -148,6 +148,7 @@ class AtMostClause(Clause):
     #         self.competing_element2 = a2
 
 
+
     def get_concerned_agents(self):
         if self.orientation == "agent":
             return [self.element_to_not_share]
