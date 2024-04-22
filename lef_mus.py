@@ -264,8 +264,8 @@ def main():
                 min_mus_size += encoding.get_mus_minimum_size()
                 max_mus_size += encoding.get_mus_maximum_size()
             #if (len(encoding.get_minimum_muses()) > 0):
-            #    for mus in encoding.get_minimum_muses():
-            #        print(mus)
+                #for mus in encoding.get_minimum_muses():
+                #   print(mus)
                 #print(encoding.get_minimum_muses())
                 #print(encoding.get_all_muses())
             #print("number of minimum MUSes: "+str(len(encoding.get_minimum_muses())))
@@ -299,7 +299,7 @@ def main():
                 min_mus_size_redundant += encoding.get_mus_minimum_size()
                 max_mus_size_redundant += encoding.get_mus_maximum_size()   
             #if (len(encoding.get_minimum_muses()) > 0):
-            #    print(encoding.get_minimum_muses())
+                #print(encoding.get_minimum_muses())
             #print("number of minimum MUSes: "+str(len(encoding.get_minimum_muses())))
             #print("total number of MUSes: "+str(len(encoding.get_all_muses())))
             #print("minimum size of a MUS: "+str(encoding.get_minimum_muses()[0][1]))
