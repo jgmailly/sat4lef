@@ -19,10 +19,10 @@ parser.add_argument("pref_file", type=argparse.FileType('r'), help="path to the 
 parser.add_argument("social_file", type=argparse.FileType('r'), help="path to the social file")
 parser.add_argument("-o", "--out", type=argparse.FileType('a'), help="optional file to print the output (append)")
 parser.add_argument("--mus", action="store_true", help="if set compute a mus instead of the allocation (only works if formula is unsat)")
-parser.add_argument("--enummin", action="store_true", help="enumerate the min MUSes")
-parser.add_argument("--enumall", action="store_true", help="enumerate all the MUSes")
-parser.add_argument("--minagent", action="store_true", help="focuses on minimal MUSes that minimize the number of agents")
-parser.add_argument("--verbose", action="store_true", help="print the details of MUSes ")
+parser.add_argument("--enummin", action="store_true", help="enumerate the min MUSes (must be used in addition to --mus)")
+#parser.add_argument("--enumall", action="store_true", help="enumerate all the MUSes")
+parser.add_argument("--minagent", action="store_true", help="focuses on minimal MUSes that minimize the number of agents (must be used in addition to --mus)")
+parser.add_argument("--verbose", action="store_true", help="print more information")
 parser.add_argument("--redundant", action="store_true", help="add redundant structural clauses")
 
 
@@ -242,7 +242,7 @@ elif args.mus:
             already_activated = activation[0]
         
 
-    if args.enummin or args.enumall: 
+    if args.enummin: # or args.enumall: 
         print("==============================================================")
         print("=== MUS enumeration ")
         print("==============================================================")
