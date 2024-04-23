@@ -1,6 +1,6 @@
 # sat4lef
 We use SAT-based techniques for Local Envy-Freeness (LEF) issues in fair division of indivisible goods. This script can find a LEF allocation if there exists one, or provide explanations (based on MUSes of the SAT encoding) for the non-existence of LEF allocations otherwise.
-It requires [pysat](https://pypi.org/project/python-sat/], [NetworkX](https://pypi.org/project/networkx/) and [GraphViz](https://pypi.org/project/graphviz/).
+It requires [pysat](https://pypi.org/project/python-sat/), [NetworkX](https://pypi.org/project/networkx/) and [GraphViz](https://pypi.org/project/graphviz/).
 
 ## Command-line
 
