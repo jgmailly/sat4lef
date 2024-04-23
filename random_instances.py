@@ -12,7 +12,7 @@ def print_social_network(graph,location,filename):
         print("A"+str(node+1),file = soc_file)
     print("#",file = soc_file)
     for edge in graph.edges():
-        print(f"{"A"+str(edge[0]+1)} {"A"+str(edge[1]+1)}",file = soc_file)
+        print(f"A{str(edge[0]+1)} A{str(edge[1]+1)}",file = soc_file)
     soc_file.close()
 
 def usage():

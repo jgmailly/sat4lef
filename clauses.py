@@ -97,7 +97,7 @@ class AtLeastClause(Clause):
     def text_translation(self):
         return self.orientation+" "+str(self.central_element)+" should be matched with at least one "+self.elements_to_match
     
-    def clause_meaning(self):
+    def get_clause_meaning(self):
         return "at_least("+str(self.central_element)+")"
     
 
@@ -165,7 +165,7 @@ class AtMostClause(Clause):
         return "However, "+self.orientation+" "+str(self.element_to_not_share)+" cannot be matched with both "+str(self.elements_to_match)+\
             " "+str(self.competing_element1)+" and "+str(self.competing_element2)+", a contradiction."
     
-    def clause_meaning(self):
+    def get_clause_meaning(self):
         return "at_most("+str(self.element_to_not_share)+", for "+str(self.competing_element1)+", "+str(self.competing_element2)+")"
     
 
@@ -222,7 +222,7 @@ class LefClause(Clause):
             res += object + ", "
         return res[:-2]
     
-    def clause_meaning(self):
+    def get_clause_meaning(self):
         return "lef("+str(self.implicant_agent)+": "+str(self.implicant_object)+")->("+str(self.implied_agent)+": "+str(self.possible_objects)+")"
 
     

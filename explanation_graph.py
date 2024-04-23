@@ -9,6 +9,13 @@ class ClauseNode:
         # node types are: top, bottom, var, at-least-one-object-per-agent, at-most-one-agent-per-object, lef-clause
         self.literals = []
         self.clause_meaning = None
+        self.text_translation = None
+
+    def set_text_translation(self, translation):
+        self.text_translation = translation
+
+    def get_text_translation(self):
+        return self.text_translation
 
     def set_clause_meaning(self, meaning):
         self.clause_meaning = meaning
@@ -101,6 +108,7 @@ class ExplanationGraph:
             for literal in clause.get_translated_clause():
                 node.add_literal(literal)
             node.set_clause_meaning(clause.get_clause_meaning())
+            node.set_text_translation(clause.text_translation())
             self.nodes.append(node)
 
         variables = set()
