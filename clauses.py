@@ -36,7 +36,7 @@ class Clause(ABC,object):
         pass
 
     def __str__(self):
-        return self.clause_meaning()
+        return self.get_clause_meaning()
     
     __repr__ = __str__
     
