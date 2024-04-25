@@ -24,6 +24,7 @@ parser.add_argument("--enummin", action="store_true", help="enumerate the min MU
 parser.add_argument("--minagent", action="store_true", help="focuses on minimal MUSes that minimize the number of agents (must be used in addition to --mus)")
 parser.add_argument("--verbose", action="store_true", help="print more information")
 parser.add_argument("--redundant", action="store_true", help="add redundant structural clauses")
+parser.add_argument("--visual", action="store_true", help="saves explanations with graphical representation of the explanation graph")
 
 
 
@@ -194,6 +195,12 @@ elif args.mus:
                     node_index += 1
                 already_activated = activation[0]
 
+            if args.visual:
+                activation_index = 0
+                for activation in activations:
+                    graph.to_graphviz(activation, activation_index)
+                    activation_index += 1
+
     else: # Focus on a minimal MUS with minimal number of agents
         min_cost=0
         min_MUSes = []
@@ -240,7 +247,12 @@ elif args.mus:
                 node_index += 1
                         
             already_activated = activation[0]
-        
+
+        if args.visual:
+            activation_index = 0
+            for activation in activations:
+                graph.to_graphviz(activation, activation_index)
+                activation_index += 1
 
     if args.enummin: # or args.enumall: 
         print("==============================================================")
