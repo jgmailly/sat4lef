@@ -166,13 +166,6 @@ if cli_args.verbose:
 #    print("Number of Implication clauses:",len(implication_clauses))
     print("Number of clauses:", len(positive_clauses + not_both_clauses + not_clauses + implication_clauses))
 
-## Garder les informations suivantes :
-## - nombre de clauses positives
-## - nombre de clauses du MUS
-## - nombre d'agents impliqués
-## - nombre d'objets impliqués (longueur de la clause positive initiale ?)
-
-
 
 
 involved_objects = set()
